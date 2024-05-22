@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.28" />
+		<PackageReference Include="MiniExcel" Version="1.31.3" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Intelligent_AutoWms.Common\Intelligent_AutoWms.Common.csproj" />
+  </ItemGroup>
+
+</Project>

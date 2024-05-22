@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelligent_AutoWms.WebApi", "Intelligent_AutoWms.WebApi\Intelligent_AutoWms.WebApi.csproj", "{EA8DC688-19B9-4794-B10A-A18C9EB3C009}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelligent_AutoWms.Common", "Intelligent_AutoWms.Common\Intelligent_AutoWms.Common.csproj", "{158CE603-2679-4B06-9859-E48CABD91CDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelligent_AutoWms.Extensions", "Intelligent_AutoWms.Extensions\Intelligent_AutoWms.Extensions.csproj", "{69C26B44-4996-4784-B4B8-FE90393A799C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelligent_AutoWms.IServices", "Intelligent_AutoWms.IServices\Intelligent_AutoWms.IServices.csproj", "{0A13D0A9-A4F5-4FAD-939B-2EDF3D62C086}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelligent_AutoWms.Model", "Intelligent_AutoWms.Model\Intelligent_AutoWms.Model.csproj", "{DCF0C9BB-73CE-45FD-B1FE-95D37B44771F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelligent_AutoWms.Services", "Intelligent_AutoWms.Services\Intelligent_AutoWms.Services.csproj", "{A645AAC3-6D97-4326-B761-281F3E47C358}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA8DC688-19B9-4794-B10A-A18C9EB3C009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA8DC688-19B9-4794-B10A-A18C9EB3C009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA8DC688-19B9-4794-B10A-A18C9EB3C009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA8DC688-19B9-4794-B10A-A18C9EB3C009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{158CE603-2679-4B06-9859-E48CABD91CDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{158CE603-2679-4B06-9859-E48CABD91CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{158CE603-2679-4B06-9859-E48CABD91CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{158CE603-2679-4B06-9859-E48CABD91CDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69C26B44-4996-4784-B4B8-FE90393A799C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C26B44-4996-4784-B4B8-FE90393A799C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C26B44-4996-4784-B4B8-FE90393A799C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C26B44-4996-4784-B4B8-FE90393A799C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A13D0A9-A4F5-4FAD-939B-2EDF3D62C086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A13D0A9-A4F5-4FAD-939B-2EDF3D62C086}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A13D0A9-A4F5-4FAD-939B-2EDF3D62C086}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A13D0A9-A4F5-4FAD-939B-2EDF3D62C086}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCF0C9BB-73CE-45FD-B1FE-95D37B44771F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCF0C9BB-73CE-45FD-B1FE-95D37B44771F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCF0C9BB-73CE-45FD-B1FE-95D37B44771F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCF0C9BB-73CE-45FD-B1FE-95D37B44771F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A645AAC3-6D97-4326-B761-281F3E47C358}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A645AAC3-6D97-4326-B761-281F3E47C358}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A645AAC3-6D97-4326-B761-281F3E47C358}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A645AAC3-6D97-4326-B761-281F3E47C358}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF240EA5-55E5-4021-9115-03FBD4A5D9F1}
+	EndGlobalSection
+EndGlobal

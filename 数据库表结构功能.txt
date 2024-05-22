@@ -1,0 +1,27 @@
+1、sys_users 用户表
+2、sys_roles 角色表
+3、sys_user_role_relationship 用户角色关联表
+4、sys_receipt_order 入库单
+5、sys_delivery_order 出库单
+6、sys_warehouse 仓库表
+7、sys_area 库区表
+8、sys_shelf 货架表
+9、sys_location 货位表
+10、sys_wms_inventory 库存明细表
+11、sys_wms_inventory_history 库存明细历史表
+12、sys_task 任务表
+13、sys_task_history 任务历史表
+14、sys_operate_log 操作记录表
+15、sys_port 出入口表
+
+模块：
+1、权限模块 ----用户列表、角色列表、用户角色关系列表
+2、个人中心模块-------个人信息、重置密码
+3、基础数据模块------- 仓库列表、库区列表、货架列表、货位列表、出入口列表
+4、入库模块----入库单列表
+5、出库模块-----出库单列表
+6、任务模块-----任务列表、任务历史记录列表
+7、库存模块-----库存明细列表、库存明细历史记录列表
+8、操作记录模块----操作记录列表
+9、报表模块------（各种xxxx报表）
+10、硬件模块-----（各种硬件信息列表）
