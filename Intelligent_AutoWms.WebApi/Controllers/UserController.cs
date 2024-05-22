@@ -239,6 +239,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <param name="jwt"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ApiResult<JwtUserInfo>> GetUserInfoFromJwtAsync(string jwt)
         {
             var result = await _iuserService.GetUserInfoFromJwtAsync(jwt);
