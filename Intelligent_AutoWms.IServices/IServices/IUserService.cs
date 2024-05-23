@@ -131,7 +131,7 @@ namespace Intelligent_AutoWms.IServices.IServices
         /// </summary>
         /// <param name="jwt"></param>
         /// <returns></returns>
-        public Task<JwtUserInfo> GetUserInfoFromJwtAsync(string jwt);
+        public Task<JwtUserInfo> GetUserInfoFromJwtAsync(string token);
 
         /// <summary>
         /// 获取用户选项集

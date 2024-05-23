@@ -236,13 +236,12 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <summary>
         /// 根据jwt获取用户信息
         /// </summary>
-        /// <param name="jwt"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<ApiResult<JwtUserInfo>> GetUserInfoFromJwtAsync(string jwt)
+        public async Task<ApiResult<JwtUserInfo>> GetUserInfoFromJwtAsync(string token)
         {
-            var result = await _iuserService.GetUserInfoFromJwtAsync(jwt);
+            var result = await _iuserService.GetUserInfoFromJwtAsync(token);
             return SuccessResult(result);
         }
 

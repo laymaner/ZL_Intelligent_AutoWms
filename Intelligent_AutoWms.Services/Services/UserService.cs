@@ -727,7 +727,7 @@ namespace Intelligent_AutoWms.Services.Services
         /// </summary>
         /// <param name="jwt"></param>
         /// <returns></returns>
-        public async Task<JwtUserInfo> GetUserInfoFromJwtAsync(string jwt)
+        public async Task<JwtUserInfo> GetUserInfoFromJwtAsync(string token)
         {
             try
             {
@@ -742,7 +742,7 @@ namespace Intelligent_AutoWms.Services.Services
                     ValidateAudience = false,
                     // 其他可能需要的参数配置
                 };
-                var principal = handler.ValidateToken(jwt, validationParameters, out var validatedToken);
+                var principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
                 var jwtToken = validatedToken as JwtSecurityToken;
                 jwtUserInfo.Id = long.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
                 jwtUserInfo.Code = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
