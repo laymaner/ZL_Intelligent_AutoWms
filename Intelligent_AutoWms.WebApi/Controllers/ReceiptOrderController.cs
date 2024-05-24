@@ -130,7 +130,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <summary>
         /// 导出
         /// </summary>
-        /// <param name="deliveryOrderParamsDTO"></param>
+        /// <param name="receiptOrderParamsDTO"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<FileStreamResult> ExportAsync([FromQuery] ReceiptOrderParamsDTO receiptOrderParamsDTO)

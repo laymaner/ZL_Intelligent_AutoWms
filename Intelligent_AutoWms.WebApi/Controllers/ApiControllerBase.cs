@@ -24,7 +24,6 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <summary>
         /// 失败状态返回结果
         /// </summary>
-        /// <param name="code">状态码</param>
         /// <param name="msg">失败信息</param>
         /// <returns></returns>
         protected ApiResult<T> FailResult<T>(string? msg = null)
@@ -35,7 +34,6 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <summary>
         /// 异常状态返回结果
         /// </summary>
-        /// <param name="code">状态码</param>
         /// <param name="msg">异常信息</param>
         /// <returns></returns>
         protected ApiResult<T> ErrorResult<T>(string? msg = null)
@@ -46,8 +44,11 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <summary>
         /// 自定义状态返回结果
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="status"></param>
+        /// <param name="isSuccess"></param>
         /// <param name="result"></param>
+        /// <param name="msg"></param>
         /// <returns></returns>
         protected ApiResult<T> Result<T>(ResultStatusEnum status, bool isSuccess, T result, string? msg = null)
         {

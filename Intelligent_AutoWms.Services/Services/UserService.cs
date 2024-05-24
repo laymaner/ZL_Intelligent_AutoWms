@@ -610,6 +610,11 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     throw new Exception("Abnormal user status");
                 }
+                //判断登录密码和用户密码是否匹配
+                if (!password.Equals(MD5EncryptionUtil.Decrypt(user.Password)))
+                {
+                    throw new Exception("Password mismatch");
+                }
                 user.Password = MD5EncryptionUtil.Encrypt(newPassword);
                 user.Update_Time = DateTime.Now;
                 user.Updator = long.Parse(currentUserId);
