@@ -2,7 +2,6 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Intelligent_AutoWms.Extensions.Extensions;
 using Intelligent_AutoWms.Extensions.Filter;
-using Intelligent_AutoWms.Extensions.MiddleWares;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -90,7 +89,7 @@ builder.Services.Configure<MvcOptions>(opt =>
 {
     //opt.Filters.Add<NotLoginFilter>();
     opt.Filters.Add<TransationScopeFilter>();
-    opt.Filters.Add<RateLimitFilter>();
+    //opt.Filters.Add<RateLimitFilter>();
     //opt.Filters.Add<RequestFilter>();
 });
 

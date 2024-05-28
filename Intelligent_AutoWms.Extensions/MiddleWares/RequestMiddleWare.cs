@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -91,6 +92,10 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
         {
             context.Response.ContentType = "application/json";  // 返回json 类型
             var response = context.Response;
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
 
             var result = new ErrorResponse
             {
@@ -123,7 +128,7 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
             operate_Log.Operate_Status = result.StatusCode;
             operate_Log.Error_Msg = result.Message;
             _logger.LogError(exception.Message);
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(result,settings));
         }
 
         /// <summary>
