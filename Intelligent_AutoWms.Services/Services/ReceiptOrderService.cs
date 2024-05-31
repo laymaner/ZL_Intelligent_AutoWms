@@ -11,6 +11,7 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -20,6 +21,7 @@ namespace Intelligent_AutoWms.Services.Services
         private readonly ILogger<ReceiptOrderService> _log;
         private readonly IPortService _portService;
         private readonly ILocationService _locationService;
+        private readonly AsyncLock _mutex = new AsyncLock();
 
         public ReceiptOrderService(Intelligent_AutoWms_DbContext db, ILogger<ReceiptOrderService> log, IPortService portService, ILocationService locationService)
         {
@@ -40,57 +42,60 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(createReceiptOrderDTO.Material_Code))
+                using (await _mutex.LockAsync())
                 {
-                    throw new Exception("The material code parameter cannot be empty");
-                }
-                if (createReceiptOrderDTO.Material_Type <= 0)
-                {
-                    throw new Exception("The material type parameter cannot be empty");
-                }
-                if (string.IsNullOrWhiteSpace(createReceiptOrderDTO.Port_Code))
-                {
-                    throw new Exception("The port code parameter cannot be empty");
-                }
-                var port = await _portService.GetPortByCodeAsync(createReceiptOrderDTO.Port_Code);
-                if (port.Type != (int)PortTypeEnum.Entrance)
-                {
-                    throw new Exception("Entry error");
-                }
-                var receipt_Orders = await _db.Receipt_Orders.Where(m => m.Material_Code.Equals(createReceiptOrderDTO.Material_Code) && m.Status == (int)DataStatusEnum.Normal && m.Receipt_Step == (int)ReceiptOrderStatusEnum.WaitingForStorage).SingleOrDefaultAsync();
-                if (receipt_Orders != null)
-                {
-                    throw new Exception("The material has already created a receipt, please do not create it again");
-                }
-                List<WMS_Receipt_Orders> list = new List<WMS_Receipt_Orders>();
-                var location = await _locationService.RecommendedStorageLocationAsync(port.Code);
-                WMS_Receipt_Orders receipt_Order = new WMS_Receipt_Orders();
-                receipt_Order.Order_No = GenerateOrderNoUtil.Gener("RKD") + port.Code; //生成唯一订单号流水
-                receipt_Order.Order_Type = "ZJRKD"; //自建单 build by yourself
-                receipt_Order.Material_Code = createReceiptOrderDTO.Material_Code;
-                receipt_Order.Material_Type = createReceiptOrderDTO.Material_Type;
-                receipt_Order.Location_Id = location.Id;
-                receipt_Order.Location_Code = location.Code;
-                receipt_Order.Port_Id = port.Id;
-                receipt_Order.Port_Code = port.Code;
-                receipt_Order.Receipt_Step = (int)ReceiptOrderStatusEnum.WaitingForStorage;
-                receipt_Order.Status = (int)DataStatusEnum.Normal;
-                receipt_Order.Create_Time = DateTime.Now;
-                receipt_Order.Creator = currentUserId;
+                    if (string.IsNullOrWhiteSpace(createReceiptOrderDTO.Material_Code))
+                    {
+                        throw new Exception("The material code parameter cannot be empty");
+                    }
+                    if (createReceiptOrderDTO.Material_Type <= 0)
+                    {
+                        throw new Exception("The material type parameter cannot be empty");
+                    }
+                    if (string.IsNullOrWhiteSpace(createReceiptOrderDTO.Port_Code))
+                    {
+                        throw new Exception("The port code parameter cannot be empty");
+                    }
+                    var port = await _portService.GetPortByCodeAsync(createReceiptOrderDTO.Port_Code);
+                    if (port.Type != (int)PortTypeEnum.Entrance)
+                    {
+                        throw new Exception("Entry error");
+                    }
+                    var receipt_Orders = await _db.Receipt_Orders.Where(m => m.Material_Code.Equals(createReceiptOrderDTO.Material_Code) && m.Status == (int)DataStatusEnum.Normal && m.Receipt_Step == (int)ReceiptOrderStatusEnum.WaitingForStorage).SingleOrDefaultAsync();
+                    if (receipt_Orders != null)
+                    {
+                        throw new Exception("The material has already created a receipt, please do not create it again");
+                    }
+                    List<WMS_Receipt_Orders> list = new List<WMS_Receipt_Orders>();
+                    var location = await _locationService.RecommendedStorageLocationAsync(port.Code);
+                    WMS_Receipt_Orders receipt_Order = new WMS_Receipt_Orders();
+                    receipt_Order.Order_No = GenerateOrderNoUtil.Gener("RKD") + port.Code; //生成唯一订单号流水
+                    receipt_Order.Order_Type = "ZJRKD"; //自建单 build by yourself
+                    receipt_Order.Material_Code = createReceiptOrderDTO.Material_Code;
+                    receipt_Order.Material_Type = createReceiptOrderDTO.Material_Type;
+                    receipt_Order.Location_Id = location.Id;
+                    receipt_Order.Location_Code = location.Code;
+                    receipt_Order.Port_Id = port.Id;
+                    receipt_Order.Port_Code = port.Code;
+                    receipt_Order.Receipt_Step = (int)ReceiptOrderStatusEnum.WaitingForStorage;
+                    receipt_Order.Status = (int)DataStatusEnum.Normal;
+                    receipt_Order.Create_Time = DateTime.Now;
+                    receipt_Order.Creator = currentUserId;
 
-                list.Add(receipt_Order);
-                List<string> orders = list.Select(m => m.Order_No).ToList();
+                    list.Add(receipt_Order);
+                    List<string> orders = list.Select(m => m.Order_No).ToList();
 
-                //将货位存储地址 修改为入库锁定
-                location.Step = (int)LocationStatusEnum.Warehousing_Lock;
-                location.Updator = currentUserId;
-                location.Update_Time = DateTime.Now;
-                var result = await _db.Receipt_Orders.AddAsync(receipt_Order);
-                await _db.SaveChangesAsync();
+                    //将货位存储地址 修改为入库锁定
+                    location.Step = (int)LocationStatusEnum.Warehousing_Lock;
+                    location.Updator = currentUserId;
+                    location.Update_Time = DateTime.Now;
+                    var result = await _db.Receipt_Orders.AddAsync(receipt_Order);
+                    await _db.SaveChangesAsync();
 
-                //根据入库单创建入库任务
-                await CreateTaskAsync(list, currentUserId);
-                return result.Entity.Id;
+                    //根据入库单创建入库任务
+                    await CreateTaskAsync(list, currentUserId);
+                    return result.Entity.Id;
+                }
             }
             catch (Exception ex)
             {
@@ -444,28 +449,31 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                if (ids == null || ids.Count <= 0)
+                using (await _mutex.LockAsync())
                 {
-                    throw new Exception("The ids  parameter cannot be empty");
+                    if (ids == null || ids.Count <= 0)
+                    {
+                        throw new Exception("The ids  parameter cannot be empty");
+                    }
+                    var receipt_Orders = await _db.Receipt_Orders.Where(m => ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                    if (receipt_Orders == null || receipt_Orders.Count < ids.Count)
+                    {
+                        throw new Exception("Query results do not match");
+                    }
+                    if (receipt_Orders.Any(m => m.Receipt_Step == (int)ReceiptOrderStatusEnum.Received))
+                    {
+                        throw new Exception("There are Received tasks that have been completed");
+                    }
+                    //判断该入库单是否存在入库任务
+                    var orders = receipt_Orders.Select(m => m.Order_No).ToList();
+                    var tasks = await _db.WMS_Tasks.Where(m => orders.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal).CountAsync();
+                    if (tasks > 0)
+                    {
+                        throw new Exception("There is an Received task, resending is not allowed");
+                    }
+                    await CreateTaskAsync(receipt_Orders, currentUserId);
+                    return "Regenerate Tasks Success";
                 }
-                var receipt_Orders = await _db.Receipt_Orders.Where(m => ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
-                if (receipt_Orders == null || receipt_Orders.Count < ids.Count)
-                {
-                    throw new Exception("Query results do not match");
-                }
-                if (receipt_Orders.Any(m => m.Receipt_Step == (int)ReceiptOrderStatusEnum.Received))
-                {
-                    throw new Exception("There are Received tasks that have been completed");
-                }
-                //判断该入库单是否存在入库任务
-                var orders = receipt_Orders.Select(m => m.Order_No).ToList();
-                var tasks = await _db.WMS_Tasks.Where(m => orders.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal).CountAsync();
-                if (tasks > 0)
-                {
-                    throw new Exception("There is an Received task, resending is not allowed");
-                }
-                await CreateTaskAsync(receipt_Orders, currentUserId);
-                return "Regenerate Tasks Success";
             }
             catch (Exception ex)
             {

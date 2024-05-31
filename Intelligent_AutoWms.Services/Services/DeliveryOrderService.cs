@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -11,6 +10,7 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -20,6 +20,7 @@ namespace Intelligent_AutoWms.Services.Services
         private readonly ILogger<DeliveryOrderService> _log;
         private readonly IPortService _portService;
         private readonly ILocationService _locationService;
+        private readonly AsyncLock _mutex = new AsyncLock();
 
         public DeliveryOrderService(Intelligent_AutoWms_DbContext db, ILogger<DeliveryOrderService> log, IPortService portService, ILocationService locationService)
         {
@@ -40,59 +41,62 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                if (createDeliveryOrderDTO.ids == null || createDeliveryOrderDTO.ids.Count <= 0)
+                using (await _mutex.LockAsync())
                 {
-                    throw new Exception("The ids  parameter cannot be empty");
-                }
-                if (string.IsNullOrWhiteSpace(createDeliveryOrderDTO.Port_Code))
-                {
-                    throw new Exception("The port code parameter cannot be empty");
-                }
-                var inventories= await _db.Inventories.Where(m => createDeliveryOrderDTO.ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
-                if (inventories == null || inventories.Count <= 0)
-                {
-                    throw new Exception("Inventory details not found based on ID query");
-                }
-                if (createDeliveryOrderDTO.ids.Count != inventories.Count)
-                {
-                    throw new Exception("The quantity of generated outbound orders does not match");
-                }
-                if (inventories.Any(m => m.Is_Lock =="Y"))
-                {
-                    throw new Exception("Inventory details are in a locked state");
-                }
-                var port = await _portService.GetPortByCodeAsync(createDeliveryOrderDTO.Port_Code);
-                List<WMS_Delivery_Orders> list = new List<WMS_Delivery_Orders>();
-                foreach (var item in inventories)
-                {
-                    //创建出库单
-                    WMS_Delivery_Orders delivery_Orders = new WMS_Delivery_Orders();
-                    delivery_Orders.Order_No = GenerateOrderNoUtil.Gener("CKD")+port.Code;//生成唯一订单号流水
-                    delivery_Orders.Order_Type = "ZJCKD";
-                    delivery_Orders.Material_Code = item.Material_Code;
-                    delivery_Orders.Material_Type = item.Material_Type;
-                    delivery_Orders.Location_Id = item.Location_Id;
-                    delivery_Orders.Location_Code = item.Location_Code;
-                    delivery_Orders.Port_Id = port.Id;
-                    delivery_Orders.Port_Code = port.Code;
-                    delivery_Orders.Status = (int)DataStatusEnum.Normal;
-                    delivery_Orders.Delivery_Step = (int)DeliveryOrderStatusEnum.WaitingForOutbound;
-                    delivery_Orders.Create_Time = DateTime.Now;
-                    delivery_Orders.Creator = currentUserId;
+                    if (createDeliveryOrderDTO.ids == null || createDeliveryOrderDTO.ids.Count <= 0)
+                    {
+                        throw new Exception("The ids  parameter cannot be empty");
+                    }
+                    if (string.IsNullOrWhiteSpace(createDeliveryOrderDTO.Port_Code))
+                    {
+                        throw new Exception("The port code parameter cannot be empty");
+                    }
+                    var inventories = await _db.Inventories.Where(m => createDeliveryOrderDTO.ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                    if (inventories == null || inventories.Count <= 0)
+                    {
+                        throw new Exception("Inventory details not found based on ID query");
+                    }
+                    if (createDeliveryOrderDTO.ids.Count != inventories.Count)
+                    {
+                        throw new Exception("The quantity of generated outbound orders does not match");
+                    }
+                    if (inventories.Any(m => m.Is_Lock == "Y"))
+                    {
+                        throw new Exception("Inventory details are in a locked state");
+                    }
+                    var port = await _portService.GetPortByCodeAsync(createDeliveryOrderDTO.Port_Code);
+                    List<WMS_Delivery_Orders> list = new List<WMS_Delivery_Orders>();
+                    foreach (var item in inventories)
+                    {
+                        //创建出库单
+                        WMS_Delivery_Orders delivery_Orders = new WMS_Delivery_Orders();
+                        delivery_Orders.Order_No = GenerateOrderNoUtil.Gener("CKD") + port.Code;//生成唯一订单号流水
+                        delivery_Orders.Order_Type = "ZJCKD";
+                        delivery_Orders.Material_Code = item.Material_Code;
+                        delivery_Orders.Material_Type = item.Material_Type;
+                        delivery_Orders.Location_Id = item.Location_Id;
+                        delivery_Orders.Location_Code = item.Location_Code;
+                        delivery_Orders.Port_Id = port.Id;
+                        delivery_Orders.Port_Code = port.Code;
+                        delivery_Orders.Status = (int)DataStatusEnum.Normal;
+                        delivery_Orders.Delivery_Step = (int)DeliveryOrderStatusEnum.WaitingForOutbound;
+                        delivery_Orders.Create_Time = DateTime.Now;
+                        delivery_Orders.Creator = currentUserId;
 
-                    //创建出库单 锁定库存
-                    item.Is_Lock = "Y";
-                    item.Updator = currentUserId;
-                    item.Update_Time = DateTime.Now;
+                        //创建出库单 锁定库存
+                        item.Is_Lock = "Y";
+                        item.Updator = currentUserId;
+                        item.Update_Time = DateTime.Now;
 
-                    list.Add(delivery_Orders);
+                        list.Add(delivery_Orders);
+                    }
+                    List<string> orders = list.Select(m => m.Order_No).ToList();
+                    //批量创建出库单
+                    await _db.BulkInsertAsync(list);
+                    await _db.SaveChangesAsync();
+                    //批量创建出库任务
+                    return await CreateTaskAsync(list, currentUserId);
                 }
-                List<string> orders = list.Select(m => m.Order_No).ToList();
-                //批量创建出库单
-                await _db.BulkInsertAsync(list);
-                await _db.SaveChangesAsync();
-                //批量创建出库任务
-                return await CreateTaskAsync(list, currentUserId);
             }
             catch (Exception ex)
             {
@@ -449,28 +453,31 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                if(ids ==null || ids.Count <=0)
+                using (await _mutex.LockAsync())
                 {
-                    throw new Exception("The ids  parameter cannot be empty");
-                }  
-                var delivery_Orders = await _db.Delivery_Orders.Where(m => ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
-                if (delivery_Orders == null || delivery_Orders.Count < ids.Count)
-                {
-                    throw new Exception("Query results do not match");
+                    if (ids == null || ids.Count <= 0)
+                    {
+                        throw new Exception("The ids  parameter cannot be empty");
+                    }
+                    var delivery_Orders = await _db.Delivery_Orders.Where(m => ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                    if (delivery_Orders == null || delivery_Orders.Count < ids.Count)
+                    {
+                        throw new Exception("Query results do not match");
+                    }
+                    if (delivery_Orders.Any(m => m.Delivery_Step == (int)DeliveryOrderStatusEnum.Outbound))
+                    {
+                        throw new Exception("There are outbound tasks that have been completed");
+                    }
+                    //判断该出库单是否存在出库任务
+                    var orders = delivery_Orders.Select(m => m.Order_No).ToList();
+                    var tasks = await _db.WMS_Tasks.Where(m => orders.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal).CountAsync();
+                    if (tasks > 0)
+                    {
+                        throw new Exception("There is an outbound task, resending is not allowed");
+                    }
+                    await CreateTaskAsync(delivery_Orders, currentUserId);
+                    return "Regenerate Tasks Success";
                 }
-                if (delivery_Orders.Any(m => m.Delivery_Step == (int)DeliveryOrderStatusEnum.Outbound))
-                {
-                    throw new Exception("There are outbound tasks that have been completed");
-                }
-                //判断该出库单是否存在出库任务
-                var orders = delivery_Orders.Select(m => m.Order_No).ToList();
-                var tasks = await _db.WMS_Tasks.Where(m => orders.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal).CountAsync();
-                if (tasks > 0)
-                {
-                    throw new Exception("There is an outbound task, resending is not allowed");
-                }
-                await CreateTaskAsync(delivery_Orders, currentUserId);
-                return "Regenerate Tasks Success";
             }
             catch (Exception ex)
             {

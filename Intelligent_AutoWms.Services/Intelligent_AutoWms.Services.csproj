@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Zack.EFCore.Batch.MSSQL_NET6" Version="6.1.9" />
 		<PackageReference Include="Mapster" Version="7.4.0" />
