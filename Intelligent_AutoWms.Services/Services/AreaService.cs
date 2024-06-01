@@ -516,9 +516,12 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(updateAreaDTO.Code))
                 {
-                    if (await IsExistAsync(updateAreaDTO.Code))
+                    if (!updateAreaDTO.Code.Equals(area.Code))
                     {
-                        throw new Exception($"Area code {updateAreaDTO.Code} already exists, duplicate creation is not allowed");
+                        if (await IsExistAsync(updateAreaDTO.Code))
+                        {
+                            throw new Exception($"Area code {updateAreaDTO.Code} already exists, duplicate creation is not allowed");
+                        }
                     }
                     area.Code = updateAreaDTO.Code;
                 }

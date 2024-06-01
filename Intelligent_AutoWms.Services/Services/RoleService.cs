@@ -398,9 +398,12 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(createOrUpdateRoleDTO.Code))
                 {
-                    if (await IsExistAsync(createOrUpdateRoleDTO.Code))
+                    if (!createOrUpdateRoleDTO.Code.Equals(role.Code))
                     {
-                        throw new Exception($"Role code {createOrUpdateRoleDTO.Code} already exists, duplicate creation is not allowed");
+                        if (await IsExistAsync(createOrUpdateRoleDTO.Code))
+                        {
+                            throw new Exception($"Role code {createOrUpdateRoleDTO.Code} already exists, duplicate creation is not allowed");
+                        }
                     }
                     role.Code = createOrUpdateRoleDTO.Code;
                 }

@@ -589,9 +589,12 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(updatePortDTO.Code))
                 {
-                    if (await IsExistAsync(updatePortDTO.Code))
+                    if (!updatePortDTO.Code.Equals(port.Code))
                     {
-                        throw new Exception($"Port code {updatePortDTO.Code} already exists, duplicate creation is not allowed");
+                        if (await IsExistAsync(updatePortDTO.Code))
+                        {
+                            throw new Exception($"Port code {updatePortDTO.Code} already exists, duplicate creation is not allowed");
+                        }
                     }
                     port.Code = updatePortDTO.Code;
                 }

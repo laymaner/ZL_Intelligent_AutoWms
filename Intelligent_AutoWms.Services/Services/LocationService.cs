@@ -760,10 +760,13 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(updateLocationDTO.Code))
                 {
-                    if (await IsExistAsync(updateLocationDTO.Code))
+                    if (!updateLocationDTO.Code.Equals(location.Code))
                     {
-                        throw new Exception($"Location code {updateLocationDTO.Code} already exists, duplicate creation is not allowed");
-                    }
+                        if (await IsExistAsync(updateLocationDTO.Code))
+                        {
+                            throw new Exception($"Location code {updateLocationDTO.Code} already exists, duplicate creation is not allowed");
+                        }
+                    }                
                     location.Code = updateLocationDTO.Code;
                 }
                 if (!string.IsNullOrWhiteSpace(updateLocationDTO.Name))

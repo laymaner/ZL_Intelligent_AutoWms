@@ -82,9 +82,12 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(updateWareHouseDTO.Code))
                 {
-                    if (await IsExistAsync(updateWareHouseDTO.Code))
+                    if (!updateWareHouseDTO.Code.Equals(wareHouse.Code))
                     {
-                        throw new Exception($"WareHouse code {updateWareHouseDTO.Code} already exists, duplicate creation is not allowed");
+                        if (await IsExistAsync(updateWareHouseDTO.Code))
+                        {
+                            throw new Exception($"WareHouse code {updateWareHouseDTO.Code} already exists, duplicate creation is not allowed");
+                        }
                     }
                     wareHouse.Code = updateWareHouseDTO.Code;
                 }

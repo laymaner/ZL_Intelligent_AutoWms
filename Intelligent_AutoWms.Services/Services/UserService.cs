@@ -649,9 +649,12 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Code))
                 {
-                    if (await IsExistAsync(createOrUpdateUserDTO.Code))
+                    if (!createOrUpdateUserDTO.Code.Equals(user.Code))
                     {
-                        throw new Exception($"User code {createOrUpdateUserDTO.Code} already exists, duplicate creation is not allowed");
+                        if (await IsExistAsync(createOrUpdateUserDTO.Code))
+                        {
+                            throw new Exception($"User code {createOrUpdateUserDTO.Code} already exists, duplicate creation is not allowed");
+                        }
                     }
                     user.Code = createOrUpdateUserDTO.Code;
                 }

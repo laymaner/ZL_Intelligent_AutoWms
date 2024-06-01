@@ -560,9 +560,12 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (!string.IsNullOrWhiteSpace(updateShelfDTO.Code))
                 {
-                    if (await IsExistAsync(updateShelfDTO.Code))
+                    if (!updateShelfDTO.Code.Equals(shelf.Code))
                     {
-                        throw new Exception($"Shelf code {updateShelfDTO.Code} already exists, duplicate creation is not allowed");
+                        if (await IsExistAsync(updateShelfDTO.Code))
+                        {
+                            throw new Exception($"Shelf code {updateShelfDTO.Code} already exists, duplicate creation is not allowed");
+                        }
                     }
                     shelf.Code = updateShelfDTO.Code;
                 }
