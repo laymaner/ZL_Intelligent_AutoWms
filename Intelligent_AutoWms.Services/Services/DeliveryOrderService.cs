@@ -70,7 +70,7 @@ namespace Intelligent_AutoWms.Services.Services
                     {
                         //创建出库单
                         WMS_Delivery_Orders delivery_Orders = new WMS_Delivery_Orders();
-                        delivery_Orders.Order_No = GenerateOrderNoUtil.Gener("CKD") + port.Code;//生成唯一订单号流水
+                        delivery_Orders.Order_No = GenerateOrderNoUtil.Gener("CKD") + item.Location_Code;//生成唯一订单号流水
                         delivery_Orders.Order_Type = "ZJCKD";
                         delivery_Orders.Material_Code = item.Material_Code;
                         delivery_Orders.Material_Type = item.Material_Type;

@@ -69,7 +69,7 @@ namespace Intelligent_AutoWms.Services.Services
                     List<WMS_Receipt_Orders> list = new List<WMS_Receipt_Orders>();
                     var location = await _locationService.RecommendedStorageLocationAsync(port.Code);
                     WMS_Receipt_Orders receipt_Order = new WMS_Receipt_Orders();
-                    receipt_Order.Order_No = GenerateOrderNoUtil.Gener("RKD") + port.Code; //生成唯一订单号流水
+                    receipt_Order.Order_No = GenerateOrderNoUtil.Gener("RKD") + location.Code; //生成唯一订单号流水
                     receipt_Order.Order_Type = "ZJRKD"; //自建单 build by yourself
                     receipt_Order.Material_Code = createReceiptOrderDTO.Material_Code;
                     receipt_Order.Material_Type = createReceiptOrderDTO.Material_Type;
