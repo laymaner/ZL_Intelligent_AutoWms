@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -9,9 +8,11 @@ using Intelligent_AutoWms.Model.ImExportTemplate.Area;
 using Intelligent_AutoWms.Model.RequestDTO.Area;
 using Intelligent_AutoWms.Model.ResponseDTO.Area;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MiniExcelLibs;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -403,6 +404,87 @@ namespace Intelligent_AutoWms.Services.Services
             try
             {
                 var result = MiniExcelUtil.Import<AreaDownloadTemplate>(path).ToList();
+                if (result == null || result.Count <= 0)
+                {
+                    throw new Exception("Import data is empty");
+                }
+                //判断库区编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Code)))
+                {
+                    throw new Exception("There is a null value in the imported area code");
+                }
+                //判断库区名称有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Name)))
+                {
+                    throw new Exception("There is a null value in the imported area name");
+                }
+                //判断仓库编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.WareHouse_Code)))
+                {
+                    throw new Exception("There is a null value in the imported area wareHouseCode");
+                }
+                //判断库区编码是否有重复
+                if (result.GroupBy(m => m.Code).Any(group => group.Count() > 1))
+                {
+                    throw new Exception("area code duplication");
+                }
+                //判断库区是否存在
+                var areaCodeList = result.Select(m => m.Code).ToList();
+                var areaItems = await _db.Areas.Where(m => areaCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                if (areaItems != null && areaItems.Count > 0)
+                {
+                    throw new Exception("area code already exists");
+                }
+
+                //获取所有仓库编码
+                var warehouseCodes = result.Select(m => m.WareHouse_Code).Distinct().ToList();
+                var warehouseItems = await _db.WareHouses.Where(m => warehouseCodes.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
+                if (warehouseItems != null && warehouseItems.Count == warehouseCodes.Count)
+                {
+                    var data = result.Join(warehouseItems, i => i.WareHouse_Code, o => o.Code, (i, o) => new { i, o }).Select(m => new WMS_Area
+                    {
+                        Name = m.i.Name,
+                        Code = m.i.Code,
+                        Warehouse_Id = m.o.Id,
+                        Status = (int)DataStatusEnum.Normal,
+                        Remark = m.i.Remark,
+                        Create_Time = DateTime.Now,
+                        Creator = currentUserId,
+                    });
+                    await _db.BulkInsertAsync(data);
+                    await _db.SaveChangesAsync();
+                    return "Import Area successful";
+                }
+                else
+                {
+                    throw new Exception("There is an issue with the warehouse status and it does not match");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 导入-----excel导入
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId)
+        {
+            try
+            {
+                if (!fileForm.FileName.Contains("Area_Download_Template"))
+                {
+                    throw new Exception("Please select the correct template to import");
+                }
+                var stream = fileForm.OpenReadStream();
+                var result = stream.Query<AreaDownloadTemplate>().ToList();
                 if (result == null || result.Count <= 0)
                 {
                     throw new Exception("Import data is empty");

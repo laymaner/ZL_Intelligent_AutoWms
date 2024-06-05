@@ -1,10 +1,4 @@
-﻿using Intelligent_AutoWms.Model.Entities;
-using Intelligent_AutoWms.Model.ResponseDTO.Role;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Intelligent_AutoWms.Model.ResponseDTO.Role;
 
 namespace Intelligent_AutoWms.Model.ResponseDTO.User
 {

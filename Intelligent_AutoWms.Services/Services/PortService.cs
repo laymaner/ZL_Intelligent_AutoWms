@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -9,9 +8,11 @@ using Intelligent_AutoWms.Model.ImExportTemplate.Port;
 using Intelligent_AutoWms.Model.RequestDTO.Port;
 using Intelligent_AutoWms.Model.ResponseDTO.Port;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MiniExcelLibs;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -469,6 +470,98 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 //判断出入口类型有没有空值
                 if (result.Any(m => m.Type <=0))
+                {
+                    throw new Exception("There is a null value in the imported port type");
+                }
+                //判断货架编码是否有重复
+                if (result.GroupBy(m => m.Code).Any(group => group.Count() > 1))
+                {
+                    throw new Exception("port code duplication");
+                }
+                var portCodeList = result.Select(m => m.Code).ToList();
+                var portItems = await _db.Ports.Where(m => portCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                if (portItems != null && portItems.Count > 0)
+                {
+                    throw new Exception("port code already exists");
+                }
+                //获取所有仓库编码
+                var warehouseCodes = result.Select(m => m.Warehouse_Code).Distinct().ToList();
+                var warehouseItems = await _db.WareHouses.Where(m => warehouseCodes.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
+                if (warehouseItems != null && warehouseItems.Count == warehouseCodes.Count)
+                {
+                    var data = result.Join(warehouseItems, i => i.Warehouse_Code, o => o.Code, (i, o) => new { i, o }).Select(m => new WMS_Port
+                    {
+                        Name = m.i.Name,
+                        Code = m.i.Code,
+                        Type = m.i.Type,
+                        Warehouse_Id = m.o.Id,
+                        First_Lanway = m.i.First_Lanway,
+                        Second_Lanway = m.i.Second_Lanway,
+                        Third_Lanway = m.i.Third_Lanway,
+                        Forth_Lanway = m.i.Forth_Lanway,
+                        Fifth_Lanway = m.i.Fifth_Lanway,
+                        Sixth_Lanway = m.i.Sixth_Lanway,
+                        Status = (int)DataStatusEnum.Normal,
+                        Remark = m.i.Remark,
+                        Create_Time = DateTime.Now,
+                        Creator = currentUserId,
+                    });
+                    await _db.BulkInsertAsync(data);
+                    await _db.SaveChangesAsync();
+                    return "Import Port successful";
+                }
+                else
+                {
+                    throw new Exception("There is an issue with the warehouse status and it does not match");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 导入----excel
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId)
+        {
+            try
+            {
+                if (!fileForm.FileName.Contains("Port_Download_Template"))
+                {
+                    throw new Exception("Please select the correct template to import");
+                }
+                var stream = fileForm.OpenReadStream();
+                var result = stream.Query<PortDownloadTemplate>().ToList();
+                if (result == null || result.Count <= 0)
+                {
+                    throw new Exception("Import data is empty");
+                }
+                //判断出入口编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Code)))
+                {
+                    throw new Exception("There is a null value in the imported port code");
+                }
+                //判断出入口名称有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Name)))
+                {
+                    throw new Exception("There is a null value in the imported port name");
+                }
+                //判断库区编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Warehouse_Code)))
+                {
+                    throw new Exception("There is a null value in the imported port WarehouseCode");
+                }
+                //判断出入口类型有没有空值
+                if (result.Any(m => m.Type <= 0))
                 {
                     throw new Exception("There is a null value in the imported port type");
                 }

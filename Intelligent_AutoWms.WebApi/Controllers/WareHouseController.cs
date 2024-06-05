@@ -2,11 +2,15 @@
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model.BaseModel;
 using Intelligent_AutoWms.Model.Entities;
+using Intelligent_AutoWms.Model.ImExportTemplate.WareHouse;
 using Intelligent_AutoWms.Model.RequestDTO.Warehouse;
 using Intelligent_AutoWms.Model.RequestDTO.WareHouse;
 using Intelligent_AutoWms.Model.ResponseDTO.WareHouse;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MiniExcelLibs;
+using System.IO;
 using System.Security.Claims;
 
 namespace Intelligent_AutoWms.WebApi.Controllers
@@ -20,14 +24,16 @@ namespace Intelligent_AutoWms.WebApi.Controllers
     public class WareHouseController : ApiControllerBase
     {
         private readonly IWareHouseService _iwareHouseService;
+        private readonly ILogger<WareHouseController> _logger;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="wareHouseService"></param>
-        public WareHouseController(IWareHouseService wareHouseService)
+        public WareHouseController(IWareHouseService wareHouseService, ILogger<WareHouseController> logger)
         {
             _iwareHouseService = wareHouseService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -175,7 +181,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         }
 
         /// <summary>
-        /// 导入
+        /// 导入----本地导入
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -184,6 +190,19 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         public async Task<ApiResult<string>> ImportAsync(string path)
         {
             var result = await _iwareHouseService.ImportAsync(path, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
+            return SuccessResult(result);
+        }
+
+        /// <summary>
+        /// 导入----excel导入
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Transation]
+        public async Task<ApiResult<string>> ImportExcelAsync()
+        {
+            var fileForm = Request.Form.Files.FirstOrDefault();
+            var result = await _iwareHouseService.ImportExcelAsync(fileForm, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
             return SuccessResult(result);
         }
 

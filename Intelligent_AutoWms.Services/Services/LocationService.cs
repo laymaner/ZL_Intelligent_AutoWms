@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -9,9 +8,11 @@ using Intelligent_AutoWms.Model.ImExportTemplate.Location;
 using Intelligent_AutoWms.Model.RequestDTO.Location;
 using Intelligent_AutoWms.Model.ResponseDTO.Location;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MiniExcelLibs;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -920,6 +921,102 @@ namespace Intelligent_AutoWms.Services.Services
                     }
                 }
                 return await MiniExcelUtil.ExportAsync("Location_Download_Template", list);
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 导入----excel导入
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId)
+        {
+            try
+            {
+                if (!fileForm.FileName.Contains("Location_Download_Template"))
+                {
+                    throw new Exception("Please select the correct template to import");
+                }
+                var stream = fileForm.OpenReadStream();
+                var result = stream.Query<LocationDownloadTemplate>().ToList();
+                if (result == null || result.Count <= 0)
+                {
+                    throw new Exception("Import data is empty");
+                }
+                //判断货位编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Code)))
+                {
+                    throw new Exception("There is a null value in the imported location code");
+                }
+                //判断货位名称有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Name)))
+                {
+                    throw new Exception("There is a null value in the imported location name");
+                }
+                //判断货架编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Shelf_Code)))
+                {
+                    throw new Exception("There is a null value in the imported location ShelfCode");
+                }
+                //判断货位编码是否有重复
+                if (result.GroupBy(m => m.Code).Any(group => group.Count() > 1))
+                {
+                    throw new Exception("location code duplication");
+                }
+                //判断货位是否存在
+                var locationCodeList = result.Select(m => m.Code).ToList();
+                var locationItems = await _db.Locations.Where(m => locationCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                if (locationItems != null && locationItems.Count > 0)
+                {
+                    throw new Exception("location code already exists");
+                }
+
+                //判断货架是否存在
+                var shelfCodeList = result.Select(m => m.Shelf_Code).Distinct().ToList();
+                var shelfitems = await _db.Shelves.Where(m => shelfCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name, x.Lanway, x.Shelf_Rows, x.Shelf_Columns, x.Shelf_Layers }).ToListAsync();
+                if (shelfitems != null && shelfitems.Count == shelfCodeList.Count)
+                {
+                    // 表连接 判断 货位的巷道、排、列、层 是否符合
+                    var data = result.Join(shelfitems, i => i.Shelf_Code, o => o.Code, (i, o) => new { i, o }).Select(m => new
+                    {
+                        Name = m.i.Name,
+                        Code = m.i.Code,
+                        Status = (int)DataStatusEnum.Normal,
+                        Shelf_Id = m.o.Id,
+                        Lanway = m.i.Lanway,
+                        Location_Row = m.i.Location_Row,
+                        Location_Column = m.i.Location_Column,
+                        Location_Layer = m.i.Location_Layer,
+                        Step = (int)LocationStatusEnum.Idle,
+                        Creator = currentUserId,
+                        Remark = m.i.Remark,
+                        Create_Time = DateTime.Now,
+                        Shelf_Lanway = m.o.Lanway,
+                        Shelf_Rows = m.o.Shelf_Rows,
+                        Shelf_Columns = m.o.Shelf_Columns,
+                        Shelf_Layers = m.o.Shelf_Layers,
+                    });
+                    var jugeResult = data.Where(m => m.Lanway != m.Shelf_Lanway || m.Location_Row != m.Shelf_Rows || m.Location_Column > m.Shelf_Columns || m.Location_Layer > m.Shelf_Layers).ToList();
+                    if (jugeResult.Count > 0)
+                    {
+                        throw new Exception("There is non-compliance with regulations in Lanway,Location_Row,Location_Column,Location_Layer");
+                    }
+                    var items = data.Adapt<List<WMS_Location>>();
+                    await _db.BulkInsertAsync(items);
+                    await _db.SaveChangesAsync();
+                    return "Import location successful";
+                }
+                else
+                {
+                    throw new Exception("There is an issue with the location status and it does not match");
+                }
             }
             catch (Exception ex)
             {

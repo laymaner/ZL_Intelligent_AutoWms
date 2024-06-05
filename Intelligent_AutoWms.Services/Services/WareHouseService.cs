@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -10,9 +9,11 @@ using Intelligent_AutoWms.Model.RequestDTO.Warehouse;
 using Intelligent_AutoWms.Model.RequestDTO.WareHouse;
 using Intelligent_AutoWms.Model.ResponseDTO.WareHouse;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MiniExcelLibs;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -428,6 +429,77 @@ namespace Intelligent_AutoWms.Services.Services
             try
             {
                 var result = MiniExcelUtil.Import<WareHouseDownloadTemplate>(path).ToList();
+                if (result == null || result.Count <= 0)
+                {
+                    throw new Exception("Import data is empty");
+                }
+                //判断仓库编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Code)))
+                {
+                    throw new Exception("There is a null value in the imported warehouse code");
+                }
+                //判断仓库名称有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Name)))
+                {
+                    throw new Exception("There is a null value in the imported warehouse name");
+                }
+                //判断仓库类型有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Type)))
+                {
+                    throw new Exception("There is a null value in the imported warehouse type");
+                }
+                //判断仓库编码是否有重复
+                if (result.GroupBy(m => m.Code).Any(group => group.Count() > 1))
+                {
+                    throw new Exception("warehouse code duplication");
+                }
+                //判断仓库是否存在
+                var wareCodeList = result.Select(m => m.Code).ToList();
+                var wareHouseItems = await _db.WareHouses.Where(m => wareCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                if (wareHouseItems != null && wareHouseItems.Count > 0)
+                {
+                    throw new Exception("warehouse code already exists");
+                }
+
+                var data = result.Select(m => new WMS_WareHouse
+                {
+                    Name = m.Name,
+                    Code = m.Code,
+                    Type = m.Type,
+                    Status = (int)DataStatusEnum.Normal,
+                    Creator = currentUserId,
+                    Remark = m.Remark,
+                    Create_Time = DateTime.Now,
+
+                });
+                await _db.BulkInsertAsync(data);
+                await _db.SaveChangesAsync();
+                return "Import Warehouse successful";
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 导入---excel导入
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId)
+        {
+            try
+            {
+                if (!fileForm.FileName.Contains("WareHouse_Download_Template"))
+                {
+                    throw new Exception("Please select the correct template to import");
+                }
+                var stream = fileForm.OpenReadStream();
+                var result = stream.Query<WareHouseDownloadTemplate>().ToList();
                 if (result == null || result.Count <= 0)
                 {
                     throw new Exception("Import data is empty");

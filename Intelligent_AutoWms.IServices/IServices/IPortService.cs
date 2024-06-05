@@ -2,6 +2,7 @@
 using Intelligent_AutoWms.Model.Entities;
 using Intelligent_AutoWms.Model.RequestDTO.Port;
 using Intelligent_AutoWms.Model.ResponseDTO.Port;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Intelligent_AutoWms.IServices.IServices
@@ -98,6 +99,14 @@ namespace Intelligent_AutoWms.IServices.IServices
         /// <param name="currentUserId"></param>
         /// <returns></returns>
         public Task<string> ImportAsync(string path, long currentUserId);
+
+        /// <summary>
+        /// 导入----excel导入
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        public Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId);
 
         /// <summary>
         /// 获取出入口选项集

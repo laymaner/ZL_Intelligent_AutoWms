@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -11,11 +10,13 @@ using Intelligent_AutoWms.Model.ResponseDTO.Role;
 using Intelligent_AutoWms.Model.ResponseDTO.User;
 using Mapster;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MiniExcelLibs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -792,6 +793,88 @@ namespace Intelligent_AutoWms.Services.Services
                 var item = await result.ToListAsync();
                 userOptions = item.Adapt<List<UserOptions>>();
                 return userOptions;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 导入 ----excel导入
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId)
+        {
+            try
+            {
+                if (!fileForm.FileName.Contains("User_Download_Template"))
+                {
+                    throw new Exception("Please select the correct template to import");
+                }
+                var stream = fileForm.OpenReadStream();
+                var result = stream.Query<UserDownloadTemplate>().ToList();
+                if (result == null || result.Count <= 0)
+                {
+                    throw new Exception("Import data is empty");
+                }
+                //判断用户编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Code)))
+                {
+                    throw new Exception("There is a null value in the imported user code");
+                }
+                //判断用户姓名有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Name)))
+                {
+                    throw new Exception("There is a null value in the imported user name");
+                }
+                //判断用户性别有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Gender)))
+                {
+                    throw new Exception("There is a null value in the imported user gebder");
+                }
+                //判断用户密码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Password)))
+                {
+                    throw new Exception("There is a null value in the imported user password");
+                }
+                //判断用户编码是否有重复
+                if (result.GroupBy(m => m.Code).Any(group => group.Count() > 1))
+                {
+                    throw new Exception("User code duplication");
+                }
+                var codeList = result.Select(m => m.Code).ToList();
+                var items = await _db.Users.Where(m => codeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                if (items != null && items.Count > 0)
+                {
+                    throw new Exception("User code already exists");
+                }
+
+                var data = result.Select(m => new WMS_Users
+                {
+                    Name = m.Name,
+                    Code = m.Code,
+                    Age = m.Age,
+                    Gender = m.Gender,
+                    Password = MD5EncryptionUtil.Encrypt(m.Password),
+                    Birth = m.Birth,
+                    Email = m.Email,
+                    Phone = m.Phone,
+                    Address = m.Address,
+                    Status = (int)DataStatusEnum.Normal,
+                    Creator = currentUserId,
+                    Remark = m.Remark,
+                    Create_Time = DateTime.Now,
+                    Jwt_Version = 0
+
+                });
+                await _db.BulkInsertAsync(data);
+                await _db.SaveChangesAsync();
+                return "Import Users successful";
             }
             catch (Exception ex)
             {

@@ -1,6 +1,5 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
 using Intelligent_AutoWms.Common.Utils;
-using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.BaseModel;
@@ -9,9 +8,11 @@ using Intelligent_AutoWms.Model.ImExportTemplate.Shelf;
 using Intelligent_AutoWms.Model.RequestDTO.Shelf;
 using Intelligent_AutoWms.Model.ResponseDTO.Shelf;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MiniExcelLibs;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -428,6 +429,105 @@ namespace Intelligent_AutoWms.Services.Services
             try
             {
                 var result = MiniExcelUtil.Import<ShelfDownloadTemplate>(path).ToList();
+                if (result == null || result.Count <= 0)
+                {
+                    throw new Exception("Import data is empty");
+                }
+                //判断货架编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Code)))
+                {
+                    throw new Exception("There is a null value in the imported shelf code");
+                }
+                //判断货架名称有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Name)))
+                {
+                    throw new Exception("There is a null value in the imported shelf name");
+                }
+                //判断库区编码有没有空值
+                if (result.Any(m => string.IsNullOrWhiteSpace(m.Area_Code)))
+                {
+                    throw new Exception("There is a null value in the imported shelf AreaCode");
+                }
+                if (result.Any(m => m.Lanway == 0))
+                {
+                    throw new Exception("Lanway,Shelf_Rows,Shelf_Columns,Shelf_Layers Not in compliance with regulations");
+                }
+                if (result.Any(m => m.Shelf_Rows == 0))
+                {
+                    throw new Exception("Lanway,Shelf_Rows,Shelf_Columns,Shelf_Layers Not in compliance with regulations");
+                }
+                if (result.Any(m => m.Shelf_Columns == 0))
+                {
+                    throw new Exception("Lanway,Shelf_Rows,Shelf_Columns,Shelf_Layers Not in compliance with regulations");
+                }
+                if (result.Any(m => m.Shelf_Layers == 0))
+                {
+                    throw new Exception("Lanway,Shelf_Rows,Shelf_Columns,Shelf_Layers Not in compliance with regulations");
+                }
+                //判断货架编码是否有重复
+                if (result.GroupBy(m => m.Code).Any(group => group.Count() > 1))
+                {
+                    throw new Exception("shelf code duplication");
+                }
+                //判断货架是否存在
+                var shelfCodeList = result.Select(m => m.Code).ToList();
+                var shelfItems = await _db.Shelves.Where(m => shelfCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                if (shelfItems != null && shelfItems.Count > 0)
+                {
+                    throw new Exception("shelf code already exists");
+                }
+                //获取所有库区id 
+                var areaCodeList = result.Select(m => m.Area_Code).Distinct().ToList();
+                var areaitems = await _db.Areas.Where(m => areaCodeList.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
+                if (areaitems != null && areaitems.Count == areaCodeList.Count)
+                {
+                    var data = result.Join(areaitems, i => i.Area_Code, o => o.Code, (i, o) => new { i, o }).Select(m => new WMS_Shelf
+                    {
+                        Name = m.i.Name,
+                        Code = m.i.Code,
+                        Area_Id = m.o.Id,
+                        Lanway = m.i.Lanway,
+                        Shelf_Rows = m.i.Shelf_Rows,
+                        Shelf_Columns = m.i.Shelf_Columns,
+                        Shelf_Layers = m.i.Shelf_Layers,
+                        Status = (int)DataStatusEnum.Normal,
+                        Remark = m.i.Remark,
+                        Create_Time = DateTime.Now,
+                        Creator = currentUserId,
+                    });
+                    await _db.BulkInsertAsync(data);
+                    await _db.SaveChangesAsync();
+                    return "Import Shelf successful";
+                }
+                else
+                {
+                    throw new Exception("There is an issue with the shelf status and it does not match");
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 导入---excel导入
+        /// </summary>
+        /// <param name="fileForm"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> ImportExcelAsync(IFormFile fileForm, long currentUserId)
+        {
+            try
+            {
+                if (!fileForm.FileName.Contains("Shelf_Download_Template"))
+                {
+                    throw new Exception("Please select the correct template to import");
+                }
+                var stream = fileForm.OpenReadStream();
+                var result = stream.Query<ShelfDownloadTemplate>().ToList();
                 if (result == null || result.Count <= 0)
                 {
                     throw new Exception("Import data is empty");

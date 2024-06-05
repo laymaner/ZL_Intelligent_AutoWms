@@ -4,6 +4,7 @@ using Intelligent_AutoWms.Model.BaseModel;
 using Intelligent_AutoWms.Model.Entities;
 using Intelligent_AutoWms.Model.RequestDTO.User;
 using Intelligent_AutoWms.Model.ResponseDTO.User;
+using Intelligent_AutoWms.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -230,6 +231,19 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         {
             var currentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var result = await _iuserService.ImportAsync(path, currentUserId);
+            return SuccessResult(result);
+        }
+
+        /// <summary>
+        /// 导入----excel导入
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Transation]
+        public async Task<ApiResult<string>> ImportExcelAsync()
+        {
+            var fileForm = Request.Form.Files.FirstOrDefault();
+            var result = await _iuserService.ImportExcelAsync(fileForm, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
             return SuccessResult(result);
         }
 
