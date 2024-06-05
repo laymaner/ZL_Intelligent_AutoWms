@@ -17,5 +17,10 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Shelf
         /// </summary>
         public string? Name { get; set; }
 
+        /// <summary>
+        /// 库区id
+        /// </summary>
+        public long? AreaId { get; set; }
+
     }
 }

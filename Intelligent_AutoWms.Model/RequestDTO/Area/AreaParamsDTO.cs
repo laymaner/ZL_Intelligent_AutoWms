@@ -17,5 +17,10 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Area
         /// </summary>
         public string? Name { get; set; }
 
+        /// <summary>
+        /// 仓库id
+        /// </summary>
+        public long? WarehouseId { get; set; }
+
     }
 }

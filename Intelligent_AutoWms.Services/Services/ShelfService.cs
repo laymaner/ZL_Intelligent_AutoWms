@@ -187,6 +187,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(shelfParamsDTO.Name));
                 }
+                if (shelfParamsDTO.AreaId != null && shelfParamsDTO.AreaId >0)
+                {
+                    items = items.Where(m => m.Area_Id == shelfParamsDTO.AreaId);
+                }
                 //获取所有库区id 
                 var areaIds = await items.Select(m => m.Area_Id).Distinct().ToListAsync();
                 if (areaIds != null && areaIds.Count > 0)
@@ -242,6 +246,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(shelfParamsDTO.Name));
                 }
+                if (shelfParamsDTO.AreaId != null && shelfParamsDTO.AreaId > 0)
+                {
+                    items = items.Where(m => m.Area_Id == shelfParamsDTO.AreaId);
+                }
                 return await items.ToListAsync();
             }
             catch (Exception ex)
@@ -269,6 +277,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (!string.IsNullOrWhiteSpace(shelfParamsDTO.Name))
                 {
                     items = items.Where(m => m.Name.StartsWith(shelfParamsDTO.Name));
+                }
+                if (shelfParamsDTO.AreaId != null && shelfParamsDTO.AreaId > 0)
+                {
+                    items = items.Where(m => m.Area_Id == shelfParamsDTO.AreaId);
                 }
                 return await PaginationService.PaginateAsync(items,shelfParamsDTO.PageIndex,shelfParamsDTO.PageSize);
             }
@@ -405,6 +417,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (!string.IsNullOrWhiteSpace(shelfParamsDTO.Name))
                 {
                     items = items.Where(m => m.Name.StartsWith(shelfParamsDTO.Name));
+                }
+                if (shelfParamsDTO.AreaId != null && shelfParamsDTO.AreaId > 0)
+                {
+                    items = items.Where(m => m.Area_Id == shelfParamsDTO.AreaId);
                 }
                 var result =await items.ToListAsync();
                 shelfOptions = result.Adapt<List<ShelfOptions>>();

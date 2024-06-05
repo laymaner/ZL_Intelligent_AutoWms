@@ -6,6 +6,7 @@ using Intelligent_AutoWms.Model.BaseModel;
 using Intelligent_AutoWms.Model.Entities;
 using Intelligent_AutoWms.Model.ImExportTemplate.Location;
 using Intelligent_AutoWms.Model.RequestDTO.Location;
+using Intelligent_AutoWms.Model.RequestDTO.Shelf;
 using Intelligent_AutoWms.Model.ResponseDTO.Location;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -196,6 +197,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(locationParamsDTO.Name));
                 }
+                if (locationParamsDTO.ShelfId != null && locationParamsDTO.ShelfId > 0)
+                {
+                    items = items.Where(m => m.Shelf_Id == locationParamsDTO.ShelfId);
+                }
                 //获取所有货架id 
                 var shelfIds = await items.Select(m => m.Shelf_Id).Distinct().ToListAsync();
                 if (shelfIds != null && shelfIds.Count > 0)
@@ -254,6 +259,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (locationParamsDTO.Step != null && locationParamsDTO.Step > 0)
                 {
                     items = items.Where(m => m.Step == locationParamsDTO.Step);
+                }
+                if (locationParamsDTO.ShelfId != null && locationParamsDTO.ShelfId > 0)
+                {
+                    items = items.Where(m => m.Shelf_Id == locationParamsDTO.ShelfId);
                 }
                 return await items.ToListAsync();
             }
@@ -395,6 +404,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Step == locationParamsDTO.Step);
                 }
+                if (locationParamsDTO.ShelfId != null && locationParamsDTO.ShelfId > 0)
+                {
+                    items = items.Where(m => m.Shelf_Id == locationParamsDTO.ShelfId);
+                }
                 var result = await items.ToListAsync();
                 locationOptions = result.Adapt<List<LocationOptions>>();
                 return locationOptions;
@@ -428,6 +441,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (locationParamsDTO.Step != null && locationParamsDTO.Step > 0)
                 {
                     items = items.Where(m => m.Step == locationParamsDTO.Step);
+                }
+                if (locationParamsDTO.ShelfId != null && locationParamsDTO.ShelfId > 0)
+                {
+                    items = items.Where(m => m.Shelf_Id == locationParamsDTO.ShelfId);
                 }
                 return await PaginationService.PaginateAsync(items, locationParamsDTO.PageIndex, locationParamsDTO.PageSize);
             }

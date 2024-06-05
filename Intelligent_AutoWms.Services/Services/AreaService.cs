@@ -166,6 +166,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(areaParamsDTO.Name));
                 }
+                if (areaParamsDTO.WarehouseId != null && areaParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id == areaParamsDTO.WarehouseId);
+                }
                 //获取所有仓库id 
                 var warehouseIds = await items.Select(m => m.Warehouse_Id).Distinct().ToListAsync();
                 if (warehouseIds != null && warehouseIds.Count > 0)
@@ -325,6 +329,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(areaParamsDTO.Name));
                 }
+                if (areaParamsDTO.WarehouseId != null && areaParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id == areaParamsDTO.WarehouseId);
+                }
                 var result = await items.ToListAsync();
                 areaOptions = result.Adapt<List<AreaOptions>>();
                 return areaOptions;
@@ -355,6 +363,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(areaParamsDTO.Name));
                 }
+                if (areaParamsDTO.WarehouseId != null && areaParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id == areaParamsDTO.WarehouseId);
+                }
                 return await items.ToListAsync();
             }
             catch (Exception ex)
@@ -382,6 +394,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (!string.IsNullOrWhiteSpace(areaParamsDTO.Name))
                 {
                     items = items.Where(m => m.Name.StartsWith(areaParamsDTO.Name));
+                }
+                if (areaParamsDTO.WarehouseId != null && areaParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id == areaParamsDTO.WarehouseId);
                 }
                 return await PaginationService.PaginateAsync(items, areaParamsDTO.PageIndex, areaParamsDTO.PageSize);
             }
