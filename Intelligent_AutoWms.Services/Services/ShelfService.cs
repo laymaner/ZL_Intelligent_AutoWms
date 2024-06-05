@@ -193,12 +193,13 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 //获取所有库区id 
                 var areaIds = await items.Select(m => m.Area_Id).Distinct().ToListAsync();
+                var result = await items.ToListAsync();
                 if (areaIds != null && areaIds.Count > 0)
                 {
                     var areaItems = await _db.Areas.Where(m => areaIds.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
                     if (areaItems != null && areaItems.Count == areaIds.Count)
                     {
-                        var data = await items.Join(areaItems, i => i.Area_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new ShelfExportTemplate
+                        var data = result.Join(areaItems, i => i.Area_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new ShelfExportTemplate
                         {
                             Id = m.i.Id,
                             Name = m.i.Name,
@@ -210,7 +211,7 @@ namespace Intelligent_AutoWms.Services.Services
                             Shelf_Layers = m.i.Shelf_Layers,
                             Remark = m.i.Remark,
                             Create_Time = m.i.Create_Time
-                        }).ToListAsync();
+                        }).ToList();
                         list = data;
                     }
                     else

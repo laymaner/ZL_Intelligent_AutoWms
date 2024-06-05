@@ -194,12 +194,13 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 //获取所有仓库id 
                 var warehouseIds = await items.Select(m => m.Warehouse_Id).Distinct().ToListAsync();
+                var result = await items.ToListAsync();
                 if (warehouseIds != null && warehouseIds.Count > 0)
                 {
                     var warehouseItems = await _db.WareHouses.Where(m => warehouseIds.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
                     if (warehouseItems != null && warehouseItems.Count == warehouseIds.Count)
                     {
-                        var data = await items.Join(warehouseItems, i => i.Warehouse_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new PortExportTemplate
+                        var data = result.Join(warehouseItems, i => i.Warehouse_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new PortExportTemplate
                         {
                             Id = m.i.Id,
                             Name = m.i.Name,
@@ -214,7 +215,7 @@ namespace Intelligent_AutoWms.Services.Services
                             Sixth_Lanway = m.i.Sixth_Lanway,
                             Remark = m.i.Remark,
                             Create_Time = m.i.Create_Time
-                        }).ToListAsync();
+                        }).ToList();
                         list = data;
                     }
                     else

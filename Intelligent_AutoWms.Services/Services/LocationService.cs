@@ -203,12 +203,13 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 //获取所有货架id 
                 var shelfIds = await items.Select(m => m.Shelf_Id).Distinct().ToListAsync();
+                var result = await items.ToListAsync();
                 if (shelfIds != null && shelfIds.Count > 0)
                 {
                     var shelfItems = await _db.Shelves.Where(m => shelfIds.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
                     if (shelfItems != null && shelfItems.Count == shelfIds.Count)
                     {
-                        var data = await items.Join(shelfItems, i => i.Shelf_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new LocationExportTemplate
+                        var data = result.Join(shelfItems, i => i.Shelf_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new LocationExportTemplate
                         {
                             Id = m.i.Id,
                             Name = m.i.Name,
@@ -220,7 +221,7 @@ namespace Intelligent_AutoWms.Services.Services
                             LocationStatus = EnumUtil.GetEnumDescription<LocationStatusEnum>((LocationStatusEnum)m.i.Step),
                             Remark = m.i.Remark,
                             Create_Time = m.i.Create_Time
-                        }).ToListAsync();
+                        }).ToList();
                         list = data;
                     }
                     else
