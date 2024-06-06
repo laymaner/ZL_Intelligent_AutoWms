@@ -175,7 +175,7 @@ namespace Intelligent_AutoWms.Services.Services
                 var result = await items.ToListAsync();
                 if (warehouseIds != null && warehouseIds.Count > 0)
                 {
-                    var warehouseItems = await _db.Areas.Where(m => warehouseIds.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
+                    var warehouseItems = await _db.WareHouses.Where(m => warehouseIds.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new { x.Id, x.Code, x.Name }).ToListAsync();
                     if (warehouseItems != null && warehouseItems.Count == warehouseIds.Count)
                     {
                         var data =result.Join(warehouseItems, i => i.Warehouse_Id, o => o.Id, (i, o) => new { i, o }).Select(m => new AreaExportTemplate
