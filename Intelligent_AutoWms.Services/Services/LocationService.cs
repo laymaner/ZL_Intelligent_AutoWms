@@ -215,6 +215,7 @@ namespace Intelligent_AutoWms.Services.Services
                             Name = m.i.Name,
                             Code = m.i.Code,
                             Shelf_Code = m.o.Code,
+                            Lanway = m.i.Lanway,
                             Location_Row = m.i.Location_Row,
                             Location_Column = m.i.Location_Column,
                             Location_Layer = m.i.Location_Layer,
