@@ -192,6 +192,11 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Type.Equals(portParamsDTO.Type));
                 }
+                if (portParamsDTO.WarehouseId != null && portParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id.Equals(portParamsDTO.WarehouseId));
+                }
+
                 //获取所有仓库id 
                 var warehouseIds = await items.Select(m => m.Warehouse_Id).Distinct().ToListAsync();
                 var result = await items.ToListAsync();
@@ -255,6 +260,10 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Type.Equals(portParamsDTO.Type));
                 }
+                if (portParamsDTO.WarehouseId != null && portParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id.Equals(portParamsDTO.WarehouseId));
+                }
                 return await items.ToListAsync();
             }
             catch (Exception ex)
@@ -286,6 +295,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (portParamsDTO.Type != null && portParamsDTO.Type > 0)
                 {
                     items = items.Where(m => m.Type.Equals(portParamsDTO.Type));
+                }
+                if (portParamsDTO.WarehouseId != null && portParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id.Equals(portParamsDTO.WarehouseId));
                 }
                 return await PaginationService.PaginateAsync(items,portParamsDTO.PageIndex,portParamsDTO.PageSize);
             }
@@ -426,6 +439,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (portParamsDTO.Type != null && portParamsDTO.Type > 0)
                 {
                     items = items.Where(m => m.Type.Equals(portParamsDTO.Type));
+                }
+                if (portParamsDTO.WarehouseId != null && portParamsDTO.WarehouseId > 0)
+                {
+                    items = items.Where(m => m.Warehouse_Id.Equals(portParamsDTO.WarehouseId));
                 }
                 var result = await items.ToListAsync();
                 portOptions = result.Adapt<List<PortOptions>>();

@@ -22,5 +22,10 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Port
         /// </summary>
         public int? Type { get; set; }
 
+        /// <summary>
+        /// 仓库id
+        /// </summary>
+        public long? WarehouseId { get; set; }
+
     }
 }
