@@ -23,7 +23,7 @@
         /// <summary>
         /// 仓库id
         /// </summary>
-        public long? WareHouse_Id { get; set; }
+        public long? Warehouse_Id { get; set; }
 
         /// <summary>
         /// 备注

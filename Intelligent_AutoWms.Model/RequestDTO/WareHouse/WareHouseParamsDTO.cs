@@ -20,6 +20,6 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Warehouse
         /// <summary>
         /// 仓库类型
         /// </summary>
-        public string? WareHouseType { get; set; }
+        public string? WarehouseType { get; set; }
     }
 }

@@ -47,7 +47,7 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     throw new Exception("The area name parameter is empty");
                 }
-                if (createAreaDTO.WareHouse_Id == null || createAreaDTO.WareHouse_Id <= 0)
+                if (createAreaDTO.Warehouse_Id == null || createAreaDTO.Warehouse_Id <= 0)
                 {
                     throw new Exception("The warehouse id parameter is empty");
                 }
@@ -55,16 +55,16 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     throw new Exception("The area already exists");
                 }
-                var warehouse = await _db.WareHouses.Where(m => m.Id == createAreaDTO.WareHouse_Id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                var warehouse = await _db.WareHouses.Where(m => m.Id == createAreaDTO.Warehouse_Id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
                 if (warehouse == null)
                 {
-                    throw new Exception($"No information found for warehouse,id is {createAreaDTO.WareHouse_Id}");
+                    throw new Exception($"No information found for warehouse,id is {createAreaDTO.Warehouse_Id}");
                 }
                 WMS_Area area = new WMS_Area();
                 area.Code = createAreaDTO.Code;
                 area.Name = createAreaDTO.Name;
                 area.Remark = createAreaDTO.Remark;
-                area.Warehouse_Id = (long)createAreaDTO.WareHouse_Id;
+                area.Warehouse_Id = (long)createAreaDTO.Warehouse_Id;
                 area.Creator = currentUserId;
                 area.Status = (int)DataStatusEnum.Normal;
                 area.Create_Time = DateTime.Now;
@@ -624,12 +624,12 @@ namespace Intelligent_AutoWms.Services.Services
                     }
                     area.Code = updateAreaDTO.Code;
                 }
-                if (updateAreaDTO.WareHouse_Id !=null && updateAreaDTO.WareHouse_Id > 0)
+                if (updateAreaDTO.Warehouse_Id != null && updateAreaDTO.Warehouse_Id > 0)
                 {
-                    var warehouse = await _db.WareHouses.Where(m => m.Id == updateAreaDTO.WareHouse_Id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                    var warehouse = await _db.WareHouses.Where(m => m.Id == updateAreaDTO.Warehouse_Id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
                     if (warehouse != null)
                     {
-                        area.Warehouse_Id = (long)updateAreaDTO.WareHouse_Id;
+                        area.Warehouse_Id = (long)updateAreaDTO.Warehouse_Id;
                     }
                 }
                 area.Name = string.IsNullOrWhiteSpace(updateAreaDTO.Name) ? area.Name : updateAreaDTO.Name;

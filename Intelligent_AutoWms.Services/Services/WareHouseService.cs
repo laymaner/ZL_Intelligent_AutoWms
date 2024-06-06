@@ -47,9 +47,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(wareHouseParamsDTO.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WareHouseType))
+                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WarehouseType))
                 {
-                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WareHouseType));
+                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WarehouseType));
                 }
                 var result =await items.ToListAsync();
                 wareHouseOptions = result.Adapt<List<WareHouseOptions>>();
@@ -235,9 +235,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(wareHouseParamsDTO.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WareHouseType))
+                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WarehouseType))
                 {
-                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WareHouseType));
+                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WarehouseType));
                 }
                 var result = items.Adapt<List<WareHouseExportTemplate>>();
                 return await MiniExcelUtil.ExportAsync("WareHouseInfomation", result);
@@ -268,9 +268,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(wareHouseParamsDTO.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WareHouseType))
+                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WarehouseType))
                 {
-                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WareHouseType));
+                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WarehouseType));
                 }
                 return await items.ToListAsync();
             }
@@ -299,9 +299,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Name.StartsWith(wareHouseParamsDTO.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WareHouseType))
+                if (!string.IsNullOrWhiteSpace(wareHouseParamsDTO.WarehouseType))
                 {
-                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WareHouseType));
+                    items = items.Where(m => m.Type.StartsWith(wareHouseParamsDTO.WarehouseType));
                 }
                 return await PaginationService.PaginateAsync(items, wareHouseParamsDTO.PageIndex, wareHouseParamsDTO.PageSize);
             }
