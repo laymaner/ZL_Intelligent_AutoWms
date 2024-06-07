@@ -3,6 +3,7 @@ using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -149,6 +150,10 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
                 operate_Log.Method_Name = httpContext.GetRouteValue("action").ToString();
                 operate_Log.Create_Time = DateTime.Now;
                 operate_Log.Status = (int)DataStatusEnum.Normal;
+                if (string.IsNullOrEmpty(operate_Log.Error_Msg)) 
+                {
+                    operate_Log.Operate_Status = httpContext.Response.StatusCode;
+                }
                 await _db.Operate_Logs.AddAsync(operate_Log);
                 await _db.SaveChangesAsync();
             }
