@@ -15,14 +15,14 @@ namespace Intelligent_AutoWms.WebApi.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
-    public class OperateLongController : ApiControllerBase
+    public class OperateLogController : ApiControllerBase
     {
         private readonly IOperateLogService _operateLogService;
 
         /// <summary>
         /// 
         /// </summary>
-        public OperateLongController(IOperateLogService operateLogService)
+        public OperateLogController(IOperateLogService operateLogService)
         {
             _operateLogService = operateLogService;
         }
