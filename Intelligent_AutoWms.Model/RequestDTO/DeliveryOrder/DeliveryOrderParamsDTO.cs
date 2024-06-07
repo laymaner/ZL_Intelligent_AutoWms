@@ -41,7 +41,7 @@ namespace Intelligent_AutoWms.Model.RequestDTO.DeliveryOrder
         /// <summary>
         /// 出库时间开始
         /// </summary>
-        public DateTime? Delivery_Time_Strat { get; set; }
+        public DateTime? Delivery_Time_Start { get; set; }
 
         /// <summary>
         /// 出库时间结束
@@ -51,7 +51,7 @@ namespace Intelligent_AutoWms.Model.RequestDTO.DeliveryOrder
         /// <summary>
         /// 创建时间开始
         /// </summary>
-        public DateTime? Create_Time_Strat { get; set; }
+        public DateTime? Create_Time_Start { get; set; }
 
         /// <summary>
         /// 创建时间结束

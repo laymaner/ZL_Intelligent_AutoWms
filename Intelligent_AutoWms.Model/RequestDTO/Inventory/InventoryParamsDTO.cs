@@ -45,7 +45,7 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Inventory
         /// <summary>
         /// 开始时间
         /// </summary>
-        public DateTime? Strat_Time { get; set; }
+        public DateTime? Start_Time { get; set; }
 
         /// <summary>
         /// 结束时间

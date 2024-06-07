@@ -281,17 +281,17 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Order_Type.Equals(deliveryOrderParamsDTO .Order_Type));
                 }
-                if (deliveryOrderParamsDTO .Create_Time_Strat != null && deliveryOrderParamsDTO .Create_Time_Strat != DateTime.MinValue)
+                if (deliveryOrderParamsDTO .Create_Time_Start != null && deliveryOrderParamsDTO .Create_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= deliveryOrderParamsDTO .Create_Time_Strat);
+                    items = items.Where(m => m.Create_Time >= deliveryOrderParamsDTO .Create_Time_Start);
                 }
                 if (deliveryOrderParamsDTO .Create_Time_End != null && deliveryOrderParamsDTO .Create_Time_End != DateTime.MinValue)
                 {
                     items = items.Where(m => m.Create_Time <= deliveryOrderParamsDTO .Create_Time_End);
                 }
-                if (deliveryOrderParamsDTO .Delivery_Time_Strat != null && deliveryOrderParamsDTO .Delivery_Time_Strat != DateTime.MinValue)
+                if (deliveryOrderParamsDTO .Delivery_Time_Start != null && deliveryOrderParamsDTO .Delivery_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Delivery_Time >= deliveryOrderParamsDTO .Delivery_Time_Strat);
+                    items = items.Where(m => m.Delivery_Time >= deliveryOrderParamsDTO .Delivery_Time_Start);
                 }
                 if (deliveryOrderParamsDTO .Delivery_Time_End != null && deliveryOrderParamsDTO .Delivery_Time_End != DateTime.MinValue)
                 {
@@ -402,17 +402,17 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Order_Type.Equals(deliveryOrderParamsDTO.Order_Type));
                 }
-                if (deliveryOrderParamsDTO.Create_Time_Strat != null && deliveryOrderParamsDTO.Create_Time_Strat != DateTime.MinValue)
+                if (deliveryOrderParamsDTO.Create_Time_Start != null && deliveryOrderParamsDTO.Create_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= deliveryOrderParamsDTO.Create_Time_Strat);
+                    items = items.Where(m => m.Create_Time >= deliveryOrderParamsDTO.Create_Time_Start);
                 }
                 if (deliveryOrderParamsDTO.Create_Time_End != null && deliveryOrderParamsDTO.Create_Time_End != DateTime.MinValue)
                 {
                     items = items.Where(m => m.Create_Time <= deliveryOrderParamsDTO.Create_Time_End);
                 }
-                if (deliveryOrderParamsDTO.Delivery_Time_Strat != null && deliveryOrderParamsDTO.Delivery_Time_Strat != DateTime.MinValue)
+                if (deliveryOrderParamsDTO.Delivery_Time_Start != null && deliveryOrderParamsDTO.Delivery_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Delivery_Time >= deliveryOrderParamsDTO.Delivery_Time_Strat);
+                    items = items.Where(m => m.Delivery_Time >= deliveryOrderParamsDTO.Delivery_Time_Start);
                 }
                 if (deliveryOrderParamsDTO.Delivery_Time_End != null && deliveryOrderParamsDTO.Delivery_Time_End != DateTime.MinValue)
                 {
@@ -466,17 +466,17 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Order_Type.Equals(deliveryOrderParamsDTO.Order_Type));
                 }
-                if (deliveryOrderParamsDTO.Create_Time_Strat != null && deliveryOrderParamsDTO.Create_Time_Strat != DateTime.MinValue)
+                if (deliveryOrderParamsDTO.Create_Time_Start != null && deliveryOrderParamsDTO.Create_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= deliveryOrderParamsDTO.Create_Time_Strat);
+                    items = items.Where(m => m.Create_Time >= deliveryOrderParamsDTO.Create_Time_Start);
                 }
                 if (deliveryOrderParamsDTO.Create_Time_End != null && deliveryOrderParamsDTO.Create_Time_End != DateTime.MinValue)
                 {
                     items = items.Where(m => m.Create_Time <= deliveryOrderParamsDTO.Create_Time_End);
                 }
-                if (deliveryOrderParamsDTO.Delivery_Time_Strat != null && deliveryOrderParamsDTO.Delivery_Time_Strat != DateTime.MinValue)
+                if (deliveryOrderParamsDTO.Delivery_Time_Start != null && deliveryOrderParamsDTO.Delivery_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Delivery_Time >= deliveryOrderParamsDTO.Delivery_Time_Strat);
+                    items = items.Where(m => m.Delivery_Time >= deliveryOrderParamsDTO.Delivery_Time_Start);
                 }
                 if (deliveryOrderParamsDTO.Delivery_Time_End != null && deliveryOrderParamsDTO.Delivery_Time_End != DateTime.MinValue)
                 {

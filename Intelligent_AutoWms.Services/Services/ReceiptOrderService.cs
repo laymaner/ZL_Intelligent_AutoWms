@@ -197,17 +197,17 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Order_Type.Equals(receiptOrderParamsDTO.Order_Type));
                 }
-                if (receiptOrderParamsDTO.Create_Time_Strat != null && receiptOrderParamsDTO.Create_Time_Strat != DateTime.MinValue)
+                if (receiptOrderParamsDTO.Create_Time_Start != null && receiptOrderParamsDTO.Create_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= receiptOrderParamsDTO.Create_Time_Strat);
+                    items = items.Where(m => m.Create_Time >= receiptOrderParamsDTO.Create_Time_Start);
                 }
                 if (receiptOrderParamsDTO.Create_Time_End != null && receiptOrderParamsDTO.Create_Time_End != DateTime.MinValue)
                 {
                     items = items.Where(m => m.Create_Time <= receiptOrderParamsDTO.Create_Time_End);
                 }
-                if (receiptOrderParamsDTO.Receipt_Time_Strat != null && receiptOrderParamsDTO.Receipt_Time_Strat != DateTime.MinValue)
+                if (receiptOrderParamsDTO.Receipt_Time_Start != null && receiptOrderParamsDTO.Receipt_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Receipt_Time >= receiptOrderParamsDTO.Receipt_Time_Strat);
+                    items = items.Where(m => m.Receipt_Time >= receiptOrderParamsDTO.Receipt_Time_Start);
                 }
                 if (receiptOrderParamsDTO.Receipt_Time_End != null && receiptOrderParamsDTO.Receipt_Time_End != DateTime.MinValue)
                 {
@@ -262,17 +262,17 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Order_Type.Equals(receiptOrderParamsDTO.Order_Type));
                 }
-                if (receiptOrderParamsDTO.Create_Time_Strat != null && receiptOrderParamsDTO.Create_Time_Strat != DateTime.MinValue)
+                if (receiptOrderParamsDTO.Create_Time_Start != null && receiptOrderParamsDTO.Create_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= receiptOrderParamsDTO.Create_Time_Strat);
+                    items = items.Where(m => m.Create_Time >= receiptOrderParamsDTO.Create_Time_Start);
                 }
                 if (receiptOrderParamsDTO.Create_Time_End != null && receiptOrderParamsDTO.Create_Time_End != DateTime.MinValue)
                 {
                     items = items.Where(m => m.Create_Time <= receiptOrderParamsDTO.Create_Time_End);
                 }
-                if (receiptOrderParamsDTO.Receipt_Time_Strat != null && receiptOrderParamsDTO.Receipt_Time_Strat != DateTime.MinValue)
+                if (receiptOrderParamsDTO.Receipt_Time_Start != null && receiptOrderParamsDTO.Receipt_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Receipt_Time >= receiptOrderParamsDTO.Receipt_Time_Strat);
+                    items = items.Where(m => m.Receipt_Time >= receiptOrderParamsDTO.Receipt_Time_Start);
                 }
                 if (receiptOrderParamsDTO.Receipt_Time_End != null && receiptOrderParamsDTO.Receipt_Time_End != DateTime.MinValue)
                 {
@@ -326,17 +326,17 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Order_Type.Equals(receiptOrderParamsDTO.Order_Type));
                 }
-                if (receiptOrderParamsDTO.Create_Time_Strat != null && receiptOrderParamsDTO.Create_Time_Strat != DateTime.MinValue)
+                if (receiptOrderParamsDTO.Create_Time_Start != null && receiptOrderParamsDTO.Create_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= receiptOrderParamsDTO.Create_Time_Strat);
+                    items = items.Where(m => m.Create_Time >= receiptOrderParamsDTO.Create_Time_Start);
                 }
                 if (receiptOrderParamsDTO.Create_Time_End != null && receiptOrderParamsDTO.Create_Time_End != DateTime.MinValue)
                 {
                     items = items.Where(m => m.Create_Time <= receiptOrderParamsDTO.Create_Time_End);
                 }
-                if (receiptOrderParamsDTO.Receipt_Time_Strat != null && receiptOrderParamsDTO.Receipt_Time_Strat != DateTime.MinValue)
+                if (receiptOrderParamsDTO.Receipt_Time_Start != null && receiptOrderParamsDTO.Receipt_Time_Start != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Receipt_Time >= receiptOrderParamsDTO.Receipt_Time_Strat);
+                    items = items.Where(m => m.Receipt_Time >= receiptOrderParamsDTO.Receipt_Time_Start);
                 }
                 if (receiptOrderParamsDTO.Receipt_Time_End != null && receiptOrderParamsDTO.Receipt_Time_End != DateTime.MinValue)
                 {

@@ -200,9 +200,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Is_Lock.Equals(inventoryParamsDTO.Is_Lock));
                 }
-                if (inventoryParamsDTO.Strat_Time != null && inventoryParamsDTO.Strat_Time != DateTime.MinValue)
+                if (inventoryParamsDTO.Start_Time != null && inventoryParamsDTO.Start_Time != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= inventoryParamsDTO.Strat_Time);
+                    items = items.Where(m => m.Create_Time >= inventoryParamsDTO.Start_Time);
                 }
                 if (inventoryParamsDTO.End_Time != null && inventoryParamsDTO.End_Time != DateTime.MinValue)
                 {
@@ -285,9 +285,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Is_Lock.Equals(inventoryParamsDTO.Is_Lock));
                 }
-                if (inventoryParamsDTO.Strat_Time != null && inventoryParamsDTO.Strat_Time != DateTime.MinValue)
+                if (inventoryParamsDTO.Start_Time != null && inventoryParamsDTO.Start_Time != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= inventoryParamsDTO.Strat_Time);
+                    items = items.Where(m => m.Create_Time >= inventoryParamsDTO.Start_Time);
                 }
                 if (inventoryParamsDTO.End_Time != null && inventoryParamsDTO.End_Time != DateTime.MinValue)
                 {
@@ -341,9 +341,9 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     items = items.Where(m => m.Is_Lock.Equals(inventoryParamsDTO.Is_Lock));
                 }
-                if (inventoryParamsDTO.Strat_Time != null && inventoryParamsDTO.Strat_Time != DateTime.MinValue)
+                if (inventoryParamsDTO.Start_Time != null && inventoryParamsDTO.Start_Time != DateTime.MinValue)
                 {
-                    items = items.Where(m => m.Create_Time >= inventoryParamsDTO.Strat_Time);
+                    items = items.Where(m => m.Create_Time >= inventoryParamsDTO.Start_Time);
                 }
                 if (inventoryParamsDTO.End_Time != null && inventoryParamsDTO.End_Time != DateTime.MinValue)
                 {
