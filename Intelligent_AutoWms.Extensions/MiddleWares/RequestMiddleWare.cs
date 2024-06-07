@@ -1,9 +1,7 @@
 ﻿using Intelligent_AutoWms.Common.Enum;
-using Intelligent_AutoWms.Common.Utils;
 using Intelligent_AutoWms.Extensions.Attri;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.Entities;
-using Intelligent_AutoWms.Model.RequestDTO.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
-using System.Text;
 
 namespace Intelligent_AutoWms.Extensions.MiddleWares
 {
@@ -58,20 +56,9 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
 
             try
             {
-                // 过滤，只有接口
-                if (httpContext.Request.Path.Value.Contains("api"))
-                {
-                    httpContext.Request.EnableBuffering();
+                _logger.LogInformation("RequestMiddleWare-----url路径："+ httpContext.Request.Path.Value);
 
-                    // 请求数据处理
-                    await RequestDataHandle(httpContext, operate_Log);
-
-                    await _next(httpContext);               
-                }
-                else
-                {
-                    await _next(httpContext);
-                }
+                await _next(httpContext);
             }
             catch (Exception ex)
             {
@@ -82,7 +69,7 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
                 if (httpContext.Request.Path.Value.Contains("api"))
                 {
                     // 响应数据处理
-                    ResponseDataHandle(httpContext.Response, operate_Log);
+                    await ResponseDataHandle(httpContext, operate_Log);
                 }
             }
         }
@@ -132,34 +119,15 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
         }
 
         /// <summary>
-        /// 请求数据处理
+        /// 响应数据处理
         /// </summary>
-        /// <param name="httpContext"></param>
-        /// <returns></returns>
-        private async Task RequestDataHandle(HttpContext httpContext, WMS_Operate_Log operate_Log)
+        /// <param name="response"></param>
+        [Transation]
+        private async Task  ResponseDataHandle(HttpContext httpContext, WMS_Operate_Log operate_Log)
         {
-            try 
+            try
             {
-                if (httpContext.Request.Method == "POST" && httpContext.Request.ContentLength.Value > 0)
-                {
-                    var body = httpContext.Request.Body;
-                    var buffer = new byte[httpContext.Request.ContentLength.Value];
-                    await body.ReadAsync(buffer, 0, buffer.Length);
-                    operate_Log.Operate_Params = Encoding.UTF8.GetString(buffer);
-                    //重置字节流读取下标
-                    body.Position = 0;
-                }
-                else
-                {
-                    operate_Log.Operate_Params = httpContext.Request.QueryString.Value;
-                }
                 var user = httpContext.User;
-                if (httpContext.GetRouteValue("action").ToString().Equals("Login"))
-                {
-                    UserLoginDTO userDTO = JsonConvert.DeserializeObject<UserLoginDTO>(operate_Log.Operate_Params);
-                    userDTO.Password = MD5EncryptionUtil.Encrypt(userDTO.Password);
-                    operate_Log.Operate_Params = JsonConvert.SerializeObject(userDTO);
-                }
                 if (user != null && user.Identities.Any(identity => identity.IsAuthenticated))
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -174,40 +142,17 @@ namespace Intelligent_AutoWms.Extensions.MiddleWares
                         }
                     }
                 }
-
-
                 operate_Log.Operate_Type = httpContext.Request.Method;
                 operate_Log.Ip_Address = httpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
-                operate_Log.Operate_Url = httpContext.Request.Path;
+                operate_Log.Operate_Url = httpContext.Request.Path.Value;
                 operate_Log.Title = httpContext.GetRouteValue("controller").ToString();
                 operate_Log.Method_Name = httpContext.GetRouteValue("action").ToString();
-                operate_Log.Operate_Url = httpContext.Request.Path;
-            }
-            catch (Exception ex) 
-            {
-                _logger.LogDebug(ex.Message);
-            }          
-        }
-
-        /// <summary>
-        /// 响应数据处理
-        /// </summary>
-        /// <param name="response"></param>
-        [Transation]
-        private void  ResponseDataHandle(HttpResponse response, WMS_Operate_Log operate_Log)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(operate_Log.Error_Msg))
-                {
-                    operate_Log.Operate_Status = response.StatusCode;
-                }
                 operate_Log.Create_Time = DateTime.Now;
                 operate_Log.Status = (int)DataStatusEnum.Normal;
-                _db.Operate_Logs.Add(operate_Log);
-                _db.SaveChanges();
+                await _db.Operate_Logs.AddAsync(operate_Log);
+                await _db.SaveChangesAsync();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogDebug(ex.Message);
             }

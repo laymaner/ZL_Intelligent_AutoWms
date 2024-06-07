@@ -50,11 +50,18 @@ namespace Intelligent_AutoWms.IServices.IServices
         public Task<string> RegenerateTaskAsync(List<long> ids, long currentUserId);
 
         /// <summary>
-        /// 创建出库单
+        /// 创建出库单---非指定出库口出库
         /// </summary>
         /// <param name="createDeliveryOrderDTO"></param>
         /// <returns></returns>
         public Task<long> CreateAsync([FromBody] CreateDeliveryOrderDTO createDeliveryOrderDTO, long currentUserId);
+
+        /// <summary>
+        /// 创建出库单---指定出库口出库
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public Task<long> QuickyCreateAsync(List<long> ids, long currentUserId);
 
         /// <summary>
         /// 根据ids删除出库单

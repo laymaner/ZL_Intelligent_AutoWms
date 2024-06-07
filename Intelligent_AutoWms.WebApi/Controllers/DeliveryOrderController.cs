@@ -102,7 +102,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         }
 
         /// <summary>
-        /// 创建出库单
+        /// 创建出库单---指定出库口
         /// </summary>
         /// <param name="createDeliveryOrderDTO"></param>
         /// <returns></returns>
@@ -111,6 +111,20 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         public async Task<ApiResult<long>> CreateAsync([FromBody] CreateDeliveryOrderDTO createDeliveryOrderDTO)
         {
             var result = await _deliveryOrderService.CreateAsync(createDeliveryOrderDTO, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
+            return SuccessResult(result);
+        }
+
+
+        /// <summary>
+        /// 创建出库单---非指定出库口
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Transation]
+        public async Task<ApiResult<long>> QuickyCreateAsync(List<long> ids)
+        {
+            var result = await _deliveryOrderService.QuickyCreateAsync(ids, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
             return SuccessResult(result);
         }
 

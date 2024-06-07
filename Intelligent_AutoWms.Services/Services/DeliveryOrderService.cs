@@ -106,6 +106,86 @@ namespace Intelligent_AutoWms.Services.Services
         }
 
         /// <summary>
+        /// 快速创建出库单----非指定出库口
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<long> QuickyCreateAsync( List<long> ids, long currentUserId)
+        {
+            try
+            {
+                using (await _mutex.LockAsync())
+                {
+                    if (ids == null || ids.Count <= 0)
+                    {
+                        throw new Exception("The ids  parameter cannot be empty");
+                    }
+                    var inventories = await _db.Inventories.Where(m => ids.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                    if (inventories == null || inventories.Count <= 0)
+                    {
+                        throw new Exception("Inventory details not found based on ID query");
+                    }
+                    if (ids.Count != inventories.Count)
+                    {
+                        throw new Exception("The quantity of generated outbound orders does not match");
+                    }
+                    if (inventories.Any(m => m.Is_Lock == "Y"))
+                    {
+                        throw new Exception("Inventory details are in a locked state");
+                    }
+                    List<WMS_Delivery_Orders> list = new List<WMS_Delivery_Orders>();
+                    foreach (var item in inventories)
+                    {
+                        //非指定出库口 默认库存位置本巷道随机出库口
+                        var location = await _locationService.GetLocationByCodeAsync(item.Location_Code);
+                        var portItems = await _db.Ports.Where(m => m.Status == (int)DataStatusEnum.Normal && m.First_Lanway == location.Lanway && m.Type == (int)PortTypeEnum.Export).ToListAsync();
+                        if (portItems == null || portItems.Count <=0)
+                        {
+                            throw new Exception("Port does not exist");
+                        }
+                        Random random = new Random();
+                        int index = random.Next(0, portItems.Count);
+                        var port = portItems[index];
+                        //创建出库单
+                        WMS_Delivery_Orders delivery_Orders = new WMS_Delivery_Orders();
+                        delivery_Orders.Order_No = GenerateOrderNoUtil.Gener("CKD") + item.Location_Code;//生成唯一订单号流水
+                        delivery_Orders.Order_Type = "ZJCKD";
+                        delivery_Orders.Material_Code = item.Material_Code;
+                        delivery_Orders.Material_Type = item.Material_Type;
+                        delivery_Orders.Location_Id = item.Location_Id;
+                        delivery_Orders.Location_Code = item.Location_Code;
+                        delivery_Orders.Port_Id = port.Id;
+                        delivery_Orders.Port_Code = port.Code;
+                        delivery_Orders.Status = (int)DataStatusEnum.Normal;
+                        delivery_Orders.Delivery_Step = (int)DeliveryOrderStatusEnum.WaitingForOutbound;
+                        delivery_Orders.Create_Time = DateTime.Now;
+                        delivery_Orders.Creator = currentUserId;
+
+                        //创建出库单 锁定库存
+                        item.Is_Lock = "Y";
+                        item.Updator = currentUserId;
+                        item.Update_Time = DateTime.Now;
+
+                        list.Add(delivery_Orders);
+                    }
+                    List<string> orders = list.Select(m => m.Order_No).ToList();
+                    //批量创建出库单
+                    await _db.BulkInsertAsync(list);
+                    await _db.SaveChangesAsync();
+                    //批量创建出库任务
+                    return await CreateTaskAsync(list, currentUserId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// 根据ids删库出库单信息
         /// </summary>
         /// <param name="ids"></param>

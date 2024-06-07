@@ -56,33 +56,27 @@ namespace Intelligent_AutoWms.Model.ImExportTemplate.OperateLog
         public string Operate_Url { get; set; }
 
         /// <summary>
-        /// 参数
-        /// </summary>
-        [ExcelColumn(Name = "参数", Index = 8, Width = 50)]
-        public string? Operate_Params { get; set; }
-
-        /// <summary>
         /// 操作状态
         /// </summary>
-        [ExcelColumn(Name = "操作状态", Index = 9, Width = 50)]
+        [ExcelColumn(Name = "操作状态", Index = 8, Width = 50)]
         public int Operate_Status { get; set; }
 
         /// <summary>
         /// 错误消息
         /// </summary>
-        [ExcelColumn(Name = "错误消息", Index = 10, Width = 50)]
+        [ExcelColumn(Name = "错误消息", Index = 9, Width = 50)]
         public string? Error_Msg { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [ExcelColumn(Name = "备注", Index = 11, Width = 50)]
+        [ExcelColumn(Name = "备注", Index = 10, Width = 50)]
         public string? Remark { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [ExcelColumn(Name = "创建时间", Index = 12, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
+        [ExcelColumn(Name = "创建时间", Index = 11, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
         public DateTime Create_Time { get; set; }
     }
 }

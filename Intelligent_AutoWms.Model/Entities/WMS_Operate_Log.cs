@@ -57,12 +57,6 @@ namespace Intelligent_AutoWms.Model.Entities
         public string Operate_Url { get; set; }
 
         /// <summary>
-        /// 参数
-        /// </summary>
-        [Column("operate_params")]
-        public string? Operate_Params { get; set; }
-
-        /// <summary>
         /// 操作状态
         /// </summary>
         [Column("operate_status")]
