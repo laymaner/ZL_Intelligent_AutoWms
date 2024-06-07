@@ -445,7 +445,7 @@ namespace Intelligent_AutoWms.Services.Services
         /// <param name="ids"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> RegenerateTaskAsync(List<long> ids,long currentUserId)
+        public async Task<string> RegenerateTaskByIdsAsync(List<long> ids,long currentUserId)
         {
             try
             {
@@ -473,6 +473,42 @@ namespace Intelligent_AutoWms.Services.Services
                     }
                     await CreateTaskAsync(receipt_Orders, currentUserId);
                     return "Regenerate Tasks Success";
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 一键重新生成入库任务
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> RegenerateTaskAsync(long currentUserId)
+        {
+            try
+            {
+                using (await _mutex.LockAsync())
+                {
+                    var items = await _db.Receipt_Orders.Where(m => m.Status == (int)DataStatusEnum.Normal && m.Receipt_Step == (int)ReceiptOrderStatusEnum.WaitingForStorage).ToListAsync();
+                    if (items != null && items.Count > 0)
+                    {
+                        var orderNoItems = items.Select(m => m.Order_No).Distinct().ToList();
+                        var taskItem = _db.WMS_Tasks.Any(m => orderNoItems.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal);
+                        if (taskItem)
+                        {
+                            throw new Exception("There is an Received task, resending is not allowed");
+                        }
+                        await CreateTaskAsync(items, currentUserId);
+                        return "Regenerate Tasks Success";
+                    }
+                    else 
+                    {
+                        return "There is no Received order that is eligible for re-issuance";
+                    }
                 }
             }
             catch (Exception ex)

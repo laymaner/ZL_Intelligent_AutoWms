@@ -47,7 +47,13 @@ namespace Intelligent_AutoWms.IServices.IServices
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public Task<string> RegenerateTaskAsync(List<long> ids, long currentUserId);
+        public Task<string> RegenerateTaskByIdsAsync(List<long> ids, long currentUserId);
+
+        /// <summary>
+        /// 一键重新生成出库任务
+        /// </summary>
+        /// <returns></returns>
+        public Task<string> RegenerateTaskAsync( long currentUserId);
 
         /// <summary>
         /// 创建出库单---非指定出库口出库

@@ -95,9 +95,21 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Transation]
-        public async Task<ApiResult<string>> RegenerateTaskAsync(List<long> ids)
+        public async Task<ApiResult<string>> RegenerateTaskByIdsAsync(List<long> ids)
         {
-            var result = await _deliveryOrderService.RegenerateTaskAsync(ids, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
+            var result = await _deliveryOrderService.RegenerateTaskByIdsAsync(ids, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
+            return SuccessResult(result);
+        }
+
+        /// <summary>
+        /// 一键重新生成出库任务
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Transation]
+        public async Task<ApiResult<string>> RegenerateTaskAsync()
+        {
+            var result = await _deliveryOrderService.RegenerateTaskAsync(long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
             return SuccessResult(result);
         }
 
