@@ -119,7 +119,8 @@ namespace Intelligent_AutoWms.Services.Services
                     items = items.Where(m => m.Create_Time <= operateLogParamsDTO.End_Time);
                 }
 
-                var result = await items.ToListAsync();
+                var result = items.Adapt<List<OperateLogExportTemplate>>();
+
                 return await MiniExcelUtil.ExportAsync("OperateLogInfomation", result);           
             }
             catch (Exception ex)
