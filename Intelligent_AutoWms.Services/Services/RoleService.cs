@@ -273,7 +273,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var result = _db.Roles.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var result = _db.Roles.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking();
                 if (!String.IsNullOrWhiteSpace(roleParamsDto.Name))
                 {
                     result = result.Where(m => m.Name.StartsWith(roleParamsDto.Name));

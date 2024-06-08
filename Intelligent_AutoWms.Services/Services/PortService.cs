@@ -283,7 +283,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Ports.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Ports.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(portParamsDTO.Code))
                 {
                     items = items.Where(m => m.Code.StartsWith(portParamsDTO.Code));

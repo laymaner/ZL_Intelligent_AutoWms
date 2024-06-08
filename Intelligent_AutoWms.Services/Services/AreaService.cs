@@ -387,7 +387,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Areas.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Areas.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(areaParamsDTO.Code))
                 {
                     items = items.Where(m => m.Code.StartsWith(areaParamsDTO.Code));

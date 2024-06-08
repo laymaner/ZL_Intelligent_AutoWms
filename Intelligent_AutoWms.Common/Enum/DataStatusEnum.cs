@@ -10,5 +10,7 @@ namespace Intelligent_AutoWms.Common.Enum
         Delete = 2,
         [Description("禁用")]
         Disabled = 3,
+        [Description("结束")]
+        Finished = 4,
     }
 }

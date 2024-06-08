@@ -350,7 +350,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var result = _db.Users.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var result = _db.Users.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking();
                 if (!String.IsNullOrWhiteSpace(userParams.Name))
                 {
                     result = result.Where(m => m.Name.StartsWith(userParams.Name));

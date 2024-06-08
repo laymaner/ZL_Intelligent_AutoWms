@@ -320,7 +320,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Inventories.AsNoTracking();
+                var items = _db.Inventories.OrderByDescending(n => n.Id).AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Material_Code))
                 {
                     items = items.Where(m => m.Material_Code.StartsWith(inventoryParamsDTO.Material_Code));

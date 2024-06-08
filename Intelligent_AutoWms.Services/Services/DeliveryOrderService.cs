@@ -441,7 +441,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Delivery_Orders.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Delivery_Orders.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(deliveryOrderParamsDTO.Material_Code))
                 {
                     items = items.Where(m => m.Material_Code.StartsWith(deliveryOrderParamsDTO.Material_Code));
@@ -581,13 +581,17 @@ namespace Intelligent_AutoWms.Services.Services
                     if (items != null && items.Count > 0)
                     {
                         var orderNoItems = items.Select(m => m.Order_No).Distinct().ToList();
-                        var taskItem = _db.WMS_Tasks.Any(m => orderNoItems.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal);
-                        if (taskItem)
+                        var taskItem = _db.WMS_Tasks.Where(m => orderNoItems.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Delete).Select(n => n.Order_No).Distinct().ToList();
+                        if (taskItem != null && taskItem.Count > 0)
                         {
-                            throw new Exception("There is an Delivery task, resending is not allowed");
+                            var regenerateItems = items.Where(m => taskItem.Contains(m.Order_No)).ToList();
+                            await CreateTaskAsync(regenerateItems, currentUserId);
+                            return "Regenerate Tasks Success";
                         }
-                        await CreateTaskAsync(items, currentUserId);
-                        return "Regenerate Tasks Success";
+                        else
+                        {
+                            throw new Exception("There is no data that needs to be re-issued");
+                        }
                     }
                     else
                     {

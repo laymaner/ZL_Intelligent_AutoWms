@@ -225,7 +225,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Operate_Logs.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Operate_Logs.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(operateLogParamsDTO.User_Name))
                 {
                     items = items.Where(m => m.User_Name.StartsWith(operateLogParamsDTO.User_Name));

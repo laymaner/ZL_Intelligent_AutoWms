@@ -144,7 +144,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var result = _db._User_Role_RelationShips.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var result = _db._User_Role_RelationShips.Where(m => m.Status == (int)DataStatusEnum.Normal).OrderByDescending(n => n.Id).AsNoTracking(); ;
                 if (userRoleRelationShipParamsDTO.UserId != null && userRoleRelationShipParamsDTO.UserId > 0)
                 {
                     result = result.Where(m => m.User_Id == userRoleRelationShipParamsDTO.UserId);

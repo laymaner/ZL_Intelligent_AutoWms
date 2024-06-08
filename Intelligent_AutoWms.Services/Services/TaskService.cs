@@ -237,7 +237,7 @@ namespace Intelligent_AutoWms.Services.Services
 
                             }
                             task.Task_Execute_Flag = 1;
-                            task.Status = (int)DataStatusEnum.Delete;
+                            task.Status = (int)DataStatusEnum.Finished;
                             task.Update_Time = DateTime.Now;
                             task.Task_End_Time = DateTime.Now;
                             task.Updator = currentUserId;
@@ -336,7 +336,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.WMS_Tasks.AsNoTracking();
+                var items = _db.WMS_Tasks.OrderByDescending(n => n.Id).AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(taskParamsDTO.Task_No))
                 {
                     items = items.Where(m => m.Task_No.Equals(taskParamsDTO.Task_No));
