@@ -429,7 +429,7 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     throw new Exception("The task id parameter is empty");
                 }
-                var task = await _db.WMS_Tasks.Where(m => m.Id == id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                var task = await _db.WMS_Tasks.Where(m => m.Id == id).SingleOrDefaultAsync();
                 if (task == null)
                 {
                     throw new Exception($"No information found for task,id is {id}");

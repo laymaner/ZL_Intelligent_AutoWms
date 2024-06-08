@@ -236,7 +236,7 @@ namespace Intelligent_AutoWms.Services.Services
                 {
                     throw new Exception("The inventory id parameter is empty");
                 }
-                var inventory = await _db.Inventories.Where(m => m.Id == id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                var inventory = await _db.Inventories.Where(m => m.Id == id).SingleOrDefaultAsync();
                 if (inventory == null)
                 {
                     throw new Exception($"No information found for inventory,id is {id}");
