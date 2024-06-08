@@ -578,14 +578,19 @@ namespace Intelligent_AutoWms.Services.Services
                 using (await _mutex.LockAsync())
                 {
                     var items = await _db.Delivery_Orders.Where(m => m.Status == (int)DataStatusEnum.Normal && m.Delivery_Step == (int)DeliveryOrderStatusEnum.WaitingForOutbound).ToListAsync();
+                    List<WMS_Delivery_Orders> list = new List<WMS_Delivery_Orders>();
                     if (items != null && items.Count > 0)
                     {
-                        var orderNoItems = items.Select(m => m.Order_No).Distinct().ToList();
-                        var taskItem = _db.WMS_Tasks.Where(m => orderNoItems.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Delete).Select(n => n.Order_No).Distinct().ToList();
-                        if (taskItem != null && taskItem.Count > 0)
+                        foreach (var item in items)
                         {
-                            var regenerateItems = items.Where(m => taskItem.Contains(m.Order_No)).ToList();
-                            await CreateTaskAsync(regenerateItems, currentUserId);
+                            if (!_db.WMS_Tasks.Any(m => item.Order_No.Equals(m.Order_No) && m.Status == (int)DataStatusEnum.Normal))
+                            {
+                                list.Add(item);
+                            }
+                        }
+                        if (list != null && list.Count > 0)
+                        {
+                            await CreateTaskAsync(list, currentUserId);
                             return "Regenerate Tasks Success";
                         }
                         else
@@ -595,7 +600,7 @@ namespace Intelligent_AutoWms.Services.Services
                     }
                     else
                     {
-                        throw new Exception("There is no Delivery order that is eligible for re-issuance");
+                        throw new Exception("There is no Received order that is eligible for re-issuance");
                     }
                 }
             }
