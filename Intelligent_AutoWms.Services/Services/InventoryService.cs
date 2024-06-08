@@ -470,6 +470,11 @@ namespace Intelligent_AutoWms.Services.Services
                     {
                         throw new Exception("This inventory is not locked and does not need to be unlocked");
                     }
+                    var flag = _db.Delivery_Orders.Any(m => m.Material_Code == inventory.Material_Code && m.Status == (int)DataStatusEnum.Normal && m.Delivery_Step == (int)DeliveryOrderStatusEnum.WaitingForOutbound);
+                    if (flag)
+                    {
+                        throw new Exception("The inventory has generated an outbound order and cannot be unlocked");
+                    }
                     inventory.Is_Lock = "N";
                     inventory.Update_Time = DateTime.Now;
                     inventory.Updator = currentUserId;
