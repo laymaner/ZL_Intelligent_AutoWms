@@ -54,7 +54,7 @@ namespace Intelligent_AutoWms.Model.ImExportTemplate.Inventory
         /// <summary>
         /// 订单编号
         /// </summary>
-        [ExcelColumn(Name = "订单编号", Index = 6, Width = 30)]
+        [ExcelColumn(Name = "订单编号", Index = 7, Width = 30)]
         public string Order_No { get; set; }
 
         /// <summary>
