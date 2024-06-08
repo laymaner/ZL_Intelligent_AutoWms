@@ -171,7 +171,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Inventories.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Inventories.AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Material_Code))
                 {
                     items = items.Where(m => m.Material_Code.StartsWith(inventoryParamsDTO.Material_Code));
@@ -179,6 +179,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (inventoryParamsDTO.Material_Type > 0)
                 {
                     items = items.Where(m => m.Material_Type == inventoryParamsDTO.Material_Type);
+                }
+                if (inventoryParamsDTO.Status > 0)
+                {
+                    items = items.Where(m => m.Status == inventoryParamsDTO.Status);
                 }
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Location_Code))
                 {
@@ -256,7 +260,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Inventories.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Inventories.AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Material_Code))
                 {
                     items = items.Where(m => m.Material_Code.StartsWith(inventoryParamsDTO.Material_Code));
@@ -264,6 +268,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (inventoryParamsDTO.Material_Type > 0)
                 {
                     items = items.Where(m => m.Material_Type == inventoryParamsDTO.Material_Type);
+                }
+                if (inventoryParamsDTO.Status > 0)
+                {
+                    items = items.Where(m => m.Status == inventoryParamsDTO.Status);
                 }
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Location_Code))
                 {
@@ -312,7 +320,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.Inventories.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.Inventories.AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Material_Code))
                 {
                     items = items.Where(m => m.Material_Code.StartsWith(inventoryParamsDTO.Material_Code));
@@ -320,6 +328,10 @@ namespace Intelligent_AutoWms.Services.Services
                 if (inventoryParamsDTO.Material_Type > 0)
                 {
                     items = items.Where(m => m.Material_Type == inventoryParamsDTO.Material_Type);
+                }
+                if (inventoryParamsDTO.Status > 0)
+                {
+                    items = items.Where(m => m.Status == inventoryParamsDTO.Status);
                 }
                 if (!string.IsNullOrWhiteSpace(inventoryParamsDTO.Location_Code))
                 {

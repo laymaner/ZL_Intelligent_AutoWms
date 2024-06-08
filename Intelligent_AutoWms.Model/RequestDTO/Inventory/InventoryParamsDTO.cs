@@ -38,6 +38,11 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Inventory
         public string? Order_Type { get; set; }
 
         /// <summary>
+        /// 状态
+        /// </summary>
+        public int? Status { get; set; }
+
+        /// <summary>
         /// Y/N 是否锁定
         /// </summary>
         public string? Is_Lock { get; set; }
