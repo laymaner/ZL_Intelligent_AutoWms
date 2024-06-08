@@ -90,7 +90,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.WMS_Tasks.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.WMS_Tasks.AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(taskParamsDTO.Task_No))
                 {
                     items = items.Where(m => m.Task_No.Equals(taskParamsDTO.Task_No));
@@ -263,7 +263,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.WMS_Tasks.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.WMS_Tasks.AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(taskParamsDTO.Task_No))
                 {
                     items = items.Where(m => m.Task_No.Equals(taskParamsDTO.Task_No));
@@ -331,7 +331,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                var items = _db.WMS_Tasks.Where(m => m.Status == (int)DataStatusEnum.Normal).AsNoTracking();
+                var items = _db.WMS_Tasks.AsNoTracking();
                 if (!string.IsNullOrWhiteSpace(taskParamsDTO.Task_No))
                 {
                     items = items.Where(m => m.Task_No.Equals(taskParamsDTO.Task_No));
