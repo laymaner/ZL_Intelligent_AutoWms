@@ -11,6 +11,7 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 
 namespace Intelligent_AutoWms.Services.Services
 {
@@ -22,6 +23,7 @@ namespace Intelligent_AutoWms.Services.Services
         private readonly IReceiptOrderService _receiptOrderService;
         private readonly IDeliveryOrderService _deliveryOrderService;
         private readonly ILocationService _locationService;
+        private readonly AsyncLock _mutex = new AsyncLock();
 
         public TaskService(Intelligent_AutoWms_DbContext db, ILogger<TaskService> log, IInventoryService inventoryService, IReceiptOrderService receiptOrderService, IDeliveryOrderService deliveryOrderService, ILocationService locationService)
         {
@@ -160,90 +162,93 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(ids))
+                using (await _mutex.LockAsync())
                 {
-                    var result = ids.Split(',').ToList();
-                    List<long> idList = result.Select(s => long.Parse(s)).ToList();
-                    foreach (var id in idList)
+                    if (!string.IsNullOrWhiteSpace(ids))
                     {
-                        if (id <= 0)
+                        var result = ids.Split(',').ToList();
+                        List<long> idList = result.Select(s => long.Parse(s)).ToList();
+                        foreach (var id in idList)
                         {
-                            throw new Exception("The task id parameter is empty");
-                        }
-                        var task = await _db.WMS_Tasks.Where(m => m.Id == id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
-                        if (task == null)
-                        {
-                            throw new Exception($"No information found for task,id is {id}");
-                        }
-
-
-                        if (task.Task_Mode == (int)TaskModeEnum.NormalReceipt || task.Task_Mode == (int)TaskModeEnum.AcrossReceipt)
-                        {
-                            //入库单结束
-                            var receipt_Orders = await _receiptOrderService.GetReceiptOrderByCodeAsync(task.Order_No);
-                            if (receipt_Orders.Receipt_Step != (int)ReceiptOrderStatusEnum.WaitingForStorage)
+                            if (id <= 0)
                             {
-                                throw new Exception("Inventory status error");
+                                throw new Exception("The task id parameter is empty");
                             }
-                            //修改入库单状态
-                            receipt_Orders.Receipt_Step = (int)ReceiptOrderStatusEnum.Received;
-                            receipt_Orders.Receipt_Time = DateTime.Now;
-                            receipt_Orders.Update_Time = DateTime.Now;
-                            receipt_Orders.Updator = currentUserId;
-
-                            //创建库存
-                            CreateInventoryDTO createInventoryDTO = new CreateInventoryDTO();
-                            createInventoryDTO.Material_Code = receipt_Orders.Material_Code;
-                            createInventoryDTO.Material_Type = receipt_Orders.Material_Type;
-                            createInventoryDTO.Location_Code = receipt_Orders.Location_Code;
-                            createInventoryDTO.Order_No = receipt_Orders.Order_No;
-                            createInventoryDTO.Order_Type = receipt_Orders.Order_Type;
-                            createInventoryDTO.Port_Code = receipt_Orders.Port_Code;
-                            await _inventoryService.CreateAsync(createInventoryDTO, currentUserId);
-
-
-                        }
-                        else
-                        {
-                            //出库单结束
-                            var delivery_Orders = await _deliveryOrderService.GetDeliveryOrderByCodeAsync(task.Order_No);
-                            var inventory = await _db.Inventories.Where(m => m.Material_Code.Equals(delivery_Orders.Material_Code) && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
-                            var location = await _locationService.GetLocationByCodeAsync(delivery_Orders.Location_Code);
-                            if (delivery_Orders.Delivery_Step != (int)DeliveryOrderStatusEnum.WaitingForOutbound)
+                            var task = await _db.WMS_Tasks.Where(m => m.Id == id && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                            if (task == null)
                             {
-                                throw new Exception("Error in the status of the outbound order");
+                                throw new Exception($"No information found for task,id is {id}");
                             }
-                            if (inventory == null)
-                            {
-                                throw new Exception($"No information found for inventory,Material_Code is {delivery_Orders.Material_Code}");
-                            }
-                            //修改出库单状态
-                            delivery_Orders.Delivery_Step = (int)DeliveryOrderStatusEnum.Outbound;
-                            delivery_Orders.Delivery_Time = DateTime.Now;
-                            delivery_Orders.Update_Time = DateTime.Now;
-                            delivery_Orders.Updator = currentUserId;
-                            //删除库存
-                            inventory.Status = (int)DataStatusEnum.Delete;
-                            inventory.Update_Time = DateTime.Now;
-                            inventory.Updator = currentUserId;
-                            //修改存储货位状态
-                            location.Step = (int)LocationStatusEnum.Idle;
-                            location.Update_Time = DateTime.Now;
-                            location.Updator = currentUserId;
 
+
+                            if (task.Task_Mode == (int)TaskModeEnum.NormalReceipt || task.Task_Mode == (int)TaskModeEnum.AcrossReceipt)
+                            {
+                                //入库单结束
+                                var receipt_Orders = await _receiptOrderService.GetReceiptOrderByCodeAsync(task.Order_No);
+                                if (receipt_Orders.Receipt_Step != (int)ReceiptOrderStatusEnum.WaitingForStorage)
+                                {
+                                    throw new Exception("Inventory status error");
+                                }
+                                //修改入库单状态
+                                receipt_Orders.Receipt_Step = (int)ReceiptOrderStatusEnum.Received;
+                                receipt_Orders.Receipt_Time = DateTime.Now;
+                                receipt_Orders.Update_Time = DateTime.Now;
+                                receipt_Orders.Updator = currentUserId;
+
+                                //创建库存
+                                CreateInventoryDTO createInventoryDTO = new CreateInventoryDTO();
+                                createInventoryDTO.Material_Code = receipt_Orders.Material_Code;
+                                createInventoryDTO.Material_Type = receipt_Orders.Material_Type;
+                                createInventoryDTO.Location_Code = receipt_Orders.Location_Code;
+                                createInventoryDTO.Order_No = receipt_Orders.Order_No;
+                                createInventoryDTO.Order_Type = receipt_Orders.Order_Type;
+                                createInventoryDTO.Port_Code = receipt_Orders.Port_Code;
+                                await _inventoryService.CreateAsync(createInventoryDTO, currentUserId);
+
+
+                            }
+                            else
+                            {
+                                //出库单结束
+                                var delivery_Orders = await _deliveryOrderService.GetDeliveryOrderByCodeAsync(task.Order_No);
+                                var inventory = await _db.Inventories.Where(m => m.Material_Code.Equals(delivery_Orders.Material_Code) && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                                var location = await _locationService.GetLocationByCodeAsync(delivery_Orders.Location_Code);
+                                if (delivery_Orders.Delivery_Step != (int)DeliveryOrderStatusEnum.WaitingForOutbound)
+                                {
+                                    throw new Exception("Error in the status of the outbound order");
+                                }
+                                if (inventory == null)
+                                {
+                                    throw new Exception($"No information found for inventory,Material_Code is {delivery_Orders.Material_Code}");
+                                }
+                                //修改出库单状态
+                                delivery_Orders.Delivery_Step = (int)DeliveryOrderStatusEnum.Outbound;
+                                delivery_Orders.Delivery_Time = DateTime.Now;
+                                delivery_Orders.Update_Time = DateTime.Now;
+                                delivery_Orders.Updator = currentUserId;
+                                //删除库存
+                                inventory.Status = (int)DataStatusEnum.Delete;
+                                inventory.Update_Time = DateTime.Now;
+                                inventory.Updator = currentUserId;
+                                //修改存储货位状态
+                                location.Step = (int)LocationStatusEnum.Idle;
+                                location.Update_Time = DateTime.Now;
+                                location.Updator = currentUserId;
+
+                            }
+                            task.Task_Execute_Flag = 1;
+                            task.Status = (int)DataStatusEnum.Delete;
+                            task.Update_Time = DateTime.Now;
+                            task.Task_End_Time = DateTime.Now;
+                            task.Updator = currentUserId;
+                            task.Remark = "结束任务";
                         }
-                        task.Task_Execute_Flag = 1;
-                        task.Status = (int)DataStatusEnum.Delete;
-                        task.Update_Time = DateTime.Now;
-                        task.Task_End_Time = DateTime.Now;
-                        task.Updator = currentUserId;
-                        task.Remark = "结束任务";
+                        return await _db.SaveChangesAsync();
                     }
-                    return await _db.SaveChangesAsync();
-                }
-                else
-                {
-                    throw new Exception("The ids parameter is empty");
+                    else
+                    {
+                        throw new Exception("The ids parameter is empty");
+                    }
                 }
             }
             catch (Exception ex)
