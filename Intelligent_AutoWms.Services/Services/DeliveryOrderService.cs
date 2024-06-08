@@ -591,7 +591,7 @@ namespace Intelligent_AutoWms.Services.Services
                     }
                     else
                     {
-                        return "There is no Delivery order that is eligible for re-issuance";
+                        throw new Exception("There is no Delivery order that is eligible for re-issuance");
                     }
                 }
             }

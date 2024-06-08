@@ -507,7 +507,7 @@ namespace Intelligent_AutoWms.Services.Services
                     }
                     else 
                     {
-                        return "There is no Received order that is eligible for re-issuance";
+                        throw new Exception("There is no Received order that is eligible for re-issuance");
                     }
                 }
             }

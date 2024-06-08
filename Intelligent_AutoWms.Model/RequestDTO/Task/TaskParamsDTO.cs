@@ -15,7 +15,7 @@ namespace Intelligent_AutoWms.Model.RequestDTO.Task
         /// <summary>
         /// 任务模式
         /// </summary>
-        public int Task_Mode { get; set; }
+        public int? Task_Mode { get; set; }
 
 
         /// <summary>
