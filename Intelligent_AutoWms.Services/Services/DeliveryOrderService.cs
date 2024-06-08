@@ -577,32 +577,21 @@ namespace Intelligent_AutoWms.Services.Services
             {
                 using (await _mutex.LockAsync())
                 {
-                    try
+                    var items = await _db.Delivery_Orders.Where(m => m.Status == (int)DataStatusEnum.Normal && m.Delivery_Step == (int)DeliveryOrderStatusEnum.WaitingForOutbound).ToListAsync();
+                    if (items != null && items.Count > 0)
                     {
-                        using (await _mutex.LockAsync())
+                        var orderNoItems = items.Select(m => m.Order_No).Distinct().ToList();
+                        var taskItem = _db.WMS_Tasks.Any(m => orderNoItems.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal);
+                        if (taskItem)
                         {
-                            var items = await _db.Delivery_Orders.Where(m => m.Status == (int)DataStatusEnum.Normal && m.Delivery_Step == (int)DeliveryOrderStatusEnum.WaitingForOutbound).ToListAsync();
-                            if (items != null && items.Count > 0)
-                            {
-                                var orderNoItems = items.Select(m => m.Order_No).Distinct().ToList();
-                                var taskItem = _db.WMS_Tasks.Any(m => orderNoItems.Contains(m.Order_No) && m.Status == (int)DataStatusEnum.Normal);
-                                if (taskItem)
-                                {
-                                    throw new Exception("There is an Delivery task, resending is not allowed");
-                                }
-                                await CreateTaskAsync(items, currentUserId);
-                                return "Regenerate Tasks Success";
-                            }
-                            else
-                            {
-                                return "There is no Delivery order that is eligible for re-issuance";
-                            }
+                            throw new Exception("There is an Delivery task, resending is not allowed");
                         }
+                        await CreateTaskAsync(items, currentUserId);
+                        return "Regenerate Tasks Success";
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        _log.LogDebug(ex.Message);
-                        throw new Exception(ex.Message);
+                        return "There is no Delivery order that is eligible for re-issuance";
                     }
                 }
             }
