@@ -217,16 +217,18 @@ namespace Intelligent_AutoWms.Services.Services
                         {
                             throw new Exception("The inventory order has already been generated with a task and cannot be deleted");
                         }
-                        //获取被锁定的库存 解锁库存状态
-                        var  inventory= await _db.Inventories.Where(m => m.Material_Code.Equals(delivery_Orders.Material_Code) && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
-                        if (inventory == null || inventory.Is_Lock.Equals("N"))
+                        if (delivery_Orders.Delivery_Step == (int)DeliveryOrderStatusEnum.WaitingForOutbound)
                         {
-                            throw new Exception("Inventory does not exist or inventory status is problematic");
+                            //获取被锁定的库存 解锁库存状态
+                            var inventory = await _db.Inventories.Where(m => m.Material_Code.Equals(delivery_Orders.Material_Code) && m.Status == (int)DataStatusEnum.Normal).SingleOrDefaultAsync();
+                            if (inventory == null || inventory.Is_Lock.Equals("N"))
+                            {
+                                throw new Exception("Inventory does not exist or inventory status is problematic");
+                            }
+                            inventory.Is_Lock = "N";
+                            inventory.Update_Time = DateTime.Now;
+                            inventory.Updator = currentUserId;
                         }
-
-                        inventory.Is_Lock = "N";
-                        inventory.Update_Time = DateTime.Now;
-                        inventory.Updator = currentUserId;
 
                         delivery_Orders.Status = (int)DataStatusEnum.Delete;
                         delivery_Orders.Update_Time = DateTime.Now;

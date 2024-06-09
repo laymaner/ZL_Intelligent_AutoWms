@@ -129,12 +129,6 @@ namespace Intelligent_AutoWms.Model.Entities
         public int Task_Execute_Flag { get; set; }
 
         /// <summary>
-        /// 发送状态 0：未发送 1：已发送
-        /// </summary>
-        [Column("task_send_flag")]
-        public int Task_Send_Flag { get; set; }
-
-        /// <summary>
         /// 任务结束时间
         /// </summary>
         [Column("task_end_time")]

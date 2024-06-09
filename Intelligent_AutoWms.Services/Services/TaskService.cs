@@ -187,7 +187,7 @@ namespace Intelligent_AutoWms.Services.Services
                                 var receipt_Orders = await _receiptOrderService.GetReceiptOrderByCodeAsync(task.Order_No);
                                 if (receipt_Orders.Receipt_Step != (int)ReceiptOrderStatusEnum.WaitingForStorage)
                                 {
-                                    throw new Exception("Inventory status error");
+                                    throw new Exception("Receipt_Orders status error");
                                 }
                                 //修改入库单状态
                                 receipt_Orders.Receipt_Step = (int)ReceiptOrderStatusEnum.Received;

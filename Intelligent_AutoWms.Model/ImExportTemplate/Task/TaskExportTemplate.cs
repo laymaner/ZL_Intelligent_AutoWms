@@ -125,27 +125,21 @@ namespace Intelligent_AutoWms.Model.ImExportTemplate.Task
         public int Task_Execute_Flag { get; set; }
 
         /// <summary>
-        /// 发送状态 0：未发送 1：已发送
-        /// </summary>
-        [ExcelColumn(Name = "发送状态", Index = 20, Width = 12)]
-        public int Task_Send_Flag { get; set; }
-
-        /// <summary>
         /// 任务结束时间
         /// </summary>
-        [ExcelColumn(Name = "任务结束时间", Index = 21, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
+        [ExcelColumn(Name = "任务结束时间", Index = 20, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
         public DateTime? Task_End_Time { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [ExcelColumn(Name = "备注", Index = 22, Width = 50)]
+        [ExcelColumn(Name = "备注", Index = 21, Width = 50)]
         public string? Remark { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [ExcelColumn(Name = "创建时间", Index = 23, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
+        [ExcelColumn(Name = "创建时间", Index = 22, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
         public DateTime Create_Time { get; set; }
 
     }

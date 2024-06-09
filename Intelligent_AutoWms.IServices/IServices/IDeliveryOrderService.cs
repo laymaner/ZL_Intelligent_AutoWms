@@ -56,14 +56,14 @@ namespace Intelligent_AutoWms.IServices.IServices
         public Task<string> RegenerateTaskAsync( long currentUserId);
 
         /// <summary>
-        /// 创建出库单---非指定出库口出库
+        /// 创建出库单---指定出库口出库
         /// </summary>
         /// <param name="createDeliveryOrderDTO"></param>
         /// <returns></returns>
         public Task<long> CreateAsync([FromBody] CreateDeliveryOrderDTO createDeliveryOrderDTO, long currentUserId);
 
         /// <summary>
-        /// 创建出库单---指定出库口出库
+        /// 创建出库单---快速出库---物料本货位巷道出库
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>

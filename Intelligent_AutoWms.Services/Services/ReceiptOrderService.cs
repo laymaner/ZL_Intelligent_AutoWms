@@ -137,12 +137,15 @@ namespace Intelligent_AutoWms.Services.Services
                             throw new Exception("The inventory order has already been generated with a task and cannot be deleted");
                         }
 
-                        var loaction = await _locationService.GetLocationByCodeAsync(receipt_Orders.Location_Code);
-
-                        //删除入库单 将货位存储位置改为空闲状态
-                        loaction.Step = (int)LocationStatusEnum.Idle;
-                        loaction.Update_Time = DateTime.Now;
-                        loaction.Updator = currentUserId;
+                        // 删除已入库的入库单 货位状态由不做处理
+                        if (receipt_Orders.Receipt_Step == (int) ReceiptOrderStatusEnum.WaitingForStorage) 
+                        {
+                            var loaction = await _locationService.GetLocationByCodeAsync(receipt_Orders.Location_Code);
+                            //删除入库单 将货位存储位置改为空闲状态
+                            loaction.Step = (int)LocationStatusEnum.Idle;
+                            loaction.Update_Time = DateTime.Now;
+                            loaction.Updator = currentUserId;
+                        }
 
                         receipt_Orders.Status = (int)DataStatusEnum.Delete;
                         receipt_Orders.Update_Time = DateTime.Now;
