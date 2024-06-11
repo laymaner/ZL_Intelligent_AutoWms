@@ -69,6 +69,12 @@ namespace Intelligent_AutoWms.Model.Entities
         public DateTime? Delivery_Time { get; set; }
 
         /// <summary>
+        /// 上传时间
+        /// </summary>
+        [Column("upload_time")]
+        public DateTime? Upload_Time { get; set; }
+
+        /// <summary>
         /// 出库步骤：1--待出库 2--已出库
         /// </summary>
         [Column("delivery_step")]

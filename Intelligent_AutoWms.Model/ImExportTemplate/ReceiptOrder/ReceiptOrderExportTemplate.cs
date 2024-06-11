@@ -68,27 +68,33 @@ namespace Intelligent_AutoWms.Model.ImExportTemplate.ReceiptOrder
         public DateTime? Receipt_Time { get; set; }
 
         /// <summary>
+        /// 上传时间
+        /// </summary>
+        [ExcelColumn(Name = "上传时间", Index = 10, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
+        public DateTime? Upload_Time { get; set; }
+
+        /// <summary>
         /// 入库步骤：1--待入库 2--已入库
         /// </summary>
-        [ExcelColumn(Name = "出库步骤", Index = 10, Width = 12)]
+        [ExcelColumn(Name = "出库步骤", Index = 11, Width = 12)]
         public int Receipt_Step { get; set; }
 
         /// <summary>
         /// 同步上传标志 0--未上传 1---已上传
         /// </summary>
-        [ExcelColumn(Name = "同步上传标志", Index = 11, Width = 12)]
+        [ExcelColumn(Name = "同步上传标志", Index = 12, Width = 12)]
         public int Receipt_Upload_Flag { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [ExcelColumn(Name = "备注", Index = 12, Width = 40)]
+        [ExcelColumn(Name = "备注", Index = 13, Width = 40)]
         public string? Remark { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [ExcelColumn(Name = "创建时间", Index = 13, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
+        [ExcelColumn(Name = "创建时间", Index = 14, Width = 40, Format = "yyyy-MM-dd HH:mm:ss")]
         public DateTime Create_Time { get; set; }
     }
 }
