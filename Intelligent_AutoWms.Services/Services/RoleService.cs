@@ -98,6 +98,10 @@ namespace Intelligent_AutoWms.Services.Services
                         {
                             throw new Exception($"No information found for role,roleId is {id}");
                         }
+                        if (role.Code.Equals("admin"))
+                        {
+                            throw new Exception("Administrator role does not allow deletion");
+                        }
                         var items = await _db._User_Role_RelationShips.Where(m => m.Role_Id == role.Id && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
                         if (items != null && items.Count > 0)
                         {

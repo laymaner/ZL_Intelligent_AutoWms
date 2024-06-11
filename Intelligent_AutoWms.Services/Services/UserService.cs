@@ -121,9 +121,15 @@ namespace Intelligent_AutoWms.Services.Services
                         {
                             throw new Exception($"No information found for user,userId is {id}");
                         }
-                        var items = await _db._User_Role_RelationShips.Where(m => m.User_Id == user.Id && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                        var items = await _db._User_Role_RelationShips.Where(m => m.User_Id == user.Id && m.Status == (int)DataStatusEnum.Normal).ToListAsync();                       
                         if (items != null && items.Count > 0)
                         {
+                            var roleIds = items.Select(m => m.Role_Id).Distinct().ToList();
+                            var roles = await _db.Roles.Where(m => roleIds.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
+                            if (roles.Any(m => m.Code.Equals("admin")))
+                            {
+                                throw new Exception("This user has an administrator role and deletion is not allowed");
+                            }
                             foreach (var item in items)
                             {
                                 item.Status = (int)DataStatusEnum.Delete;
