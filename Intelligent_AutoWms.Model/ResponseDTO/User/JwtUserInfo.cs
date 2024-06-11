@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Intelligent_AutoWms.Model.ResponseDTO.User
+﻿namespace Intelligent_AutoWms.Model.ResponseDTO.User
 {
     /// <summary>
     /// 根据jwt token获取用户信息
@@ -15,6 +9,11 @@ namespace Intelligent_AutoWms.Model.ResponseDTO.User
         /// 主键id
         /// </summary>
         public long Id { get; set; }
+
+        /// <summary>
+        /// 用户名称
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// 用户编码

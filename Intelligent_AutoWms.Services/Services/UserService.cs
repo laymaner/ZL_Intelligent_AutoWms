@@ -229,6 +229,7 @@ namespace Intelligent_AutoWms.Services.Services
                 else
                 {
                     claims.Add(new Claim(ClaimTypes.NameIdentifier, currentUser.Id.ToString()));
+                    claims.Add(new Claim("UserName", currentUser.Name));
                     claims.Add(new Claim(ClaimTypes.Name, currentUser.Code));
                     claims.Add(new Claim("Jwt_Version", currentUser.Jwt_Version.ToString()));
                     var items = await _db._User_Role_RelationShips.Where(m => m.User_Id == currentUser.Id && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
@@ -545,8 +546,9 @@ namespace Intelligent_AutoWms.Services.Services
 
                         List<Claim> claims = new List<Claim>();
 
-                        claims.Add(new Claim(ClaimTypes.NameIdentifier, currentUser.Id.ToString()));
+                        claims.Add(new Claim(ClaimTypes.NameIdentifier, currentUser.Id.ToString()));                   
                         claims.Add(new Claim(ClaimTypes.Name, currentUser.Code));
+                        claims.Add(new Claim("User_Name", currentUser.Name));
                         claims.Add(new Claim("Jwt_Version", currentUser.Jwt_Version.ToString()));
                         var items = await _db._User_Role_RelationShips.Where(m => m.User_Id == currentUser.Id && m.Status == (int)DataStatusEnum.Normal).ToListAsync();
                         if (items != null && items.Count > 0)
@@ -755,6 +757,7 @@ namespace Intelligent_AutoWms.Services.Services
                 var jwtToken = validatedToken as JwtSecurityToken;
                 jwtUserInfo.Id = long.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
                 jwtUserInfo.Code = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                jwtUserInfo.Name = jwtToken.Claims.FirstOrDefault(c => c.Type == "User_Name").Value;
                 List<Claim> list = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
                 if (list != null && list.Count >= 0)
                 {
