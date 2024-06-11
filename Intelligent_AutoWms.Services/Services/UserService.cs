@@ -666,10 +666,10 @@ namespace Intelligent_AutoWms.Services.Services
                 user.Gender = string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Gender) ? user.Gender : createOrUpdateUserDTO.Gender;
                 user.Age = createOrUpdateUserDTO.Age == 0 ? user.Age : createOrUpdateUserDTO.Age;
                 user.Name = string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Name) ? user.Name : createOrUpdateUserDTO.Name;
-                user.Address = string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Address) ? user.Address : createOrUpdateUserDTO.Address;
-                user.Birth = string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Birth) ? user.Birth : createOrUpdateUserDTO.Birth;
-                user.Email = string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Email) ? user.Email : createOrUpdateUserDTO.Email;
-                user.Phone = string.IsNullOrWhiteSpace(createOrUpdateUserDTO.Phone) ? user.Phone : createOrUpdateUserDTO.Phone;
+                user.Address = createOrUpdateUserDTO.Address;
+                user.Birth = createOrUpdateUserDTO.Birth;
+                user.Email = createOrUpdateUserDTO.Email;
+                user.Phone = createOrUpdateUserDTO.Phone;
                 user.Remark = createOrUpdateUserDTO.Remark;
                 user.Updator = long.Parse(currentUserId);
                 user.Update_Time = DateTime.Now;
