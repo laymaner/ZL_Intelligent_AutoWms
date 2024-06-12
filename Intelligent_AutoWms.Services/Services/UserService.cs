@@ -333,7 +333,7 @@ namespace Intelligent_AutoWms.Services.Services
                     throw new Exception($"No information found for User,id is {id}");
                 }
                 userInfo = user.Adapt<UserInfo>();
-                var idList = await _db._User_Role_RelationShips.Where(m => m.User_Id == id && m.Status == (int)DataStatusEnum.Normal).Select(x => x.Id).ToListAsync();
+                var idList = await _db._User_Role_RelationShips.Where(m => m.User_Id == id && m.Status == (int)DataStatusEnum.Normal).Select(x => x.Role_Id).Distinct().ToListAsync();
                 if (idList != null && idList.Count > 0)
                 {
                     var roleList = await _db.Roles.Where(m => idList.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new RoleOptions(x.Id, x.Code, x.Name)).ToListAsync();
@@ -484,7 +484,7 @@ namespace Intelligent_AutoWms.Services.Services
                     throw new Exception($"No information found for User,id is {userCode}");
                 }
                 userInfo = user.Adapt<UserInfo>();
-                var idList = await _db._User_Role_RelationShips.Where(m => m.User_Id == user.Id && m.Status == (int)DataStatusEnum.Normal).Select(x => x.Id).ToListAsync();
+                var idList = await _db._User_Role_RelationShips.Where(m => m.User_Id == user.Id && m.Status == (int)DataStatusEnum.Normal).Select(x => x.Role_Id).Distinct().ToListAsync();
                 if (idList != null && idList.Count > 0)
                 {
                     var roleList = await _db.Roles.Where(m => idList.Contains(m.Id) && m.Status == (int)DataStatusEnum.Normal).Select(x => new RoleOptions(x.Id, x.Code, x.Name)).ToListAsync();

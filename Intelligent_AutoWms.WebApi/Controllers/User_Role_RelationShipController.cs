@@ -31,15 +31,14 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// <summary>
         /// 创建用户角色关系
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="roleId"></param>
+        /// <param name="createRelationShipDTO"></param>
         /// <returns></returns>
         [HttpPost]
         [Transation]
-        public async Task<ApiResult<long>> CreateAsync(long userId, long roleId)
+        public async Task<ApiResult<long>> CreateAsync([FromBody] CreateRelationShipDTO createRelationShipDTO)
         {
             var currentUserId = long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-            var result = await _iuser_Role_RelationShipService.CreateAsync(userId, roleId, currentUserId);
+            var result = await _iuser_Role_RelationShipService.CreateAsync(createRelationShipDTO, currentUserId);
             return SuccessResult(result);
         }
 

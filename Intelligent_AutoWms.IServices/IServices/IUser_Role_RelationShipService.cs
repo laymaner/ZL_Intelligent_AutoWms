@@ -10,11 +10,10 @@ namespace Intelligent_AutoWms.IServices.IServices
         /// <summary>
         /// 创建用户角色关系
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="roleId"></param>
+        /// <param name="createRelationShipDTO"></param>
         /// <param name="currentUserId"></param>
         /// <returns></returns>
-        public Task<long> CreateAsync(long userId, long roleId, long currentUserId);
+        public Task<long> CreateAsync([FromBody] CreateRelationShipDTO createRelationShipDTO, long currentUserId);
 
         /// <summary>
         /// 查询用户角色关系
