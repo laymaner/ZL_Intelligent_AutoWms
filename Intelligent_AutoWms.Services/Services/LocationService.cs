@@ -699,7 +699,7 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (port.First_Lanway != 0)
                 {
-                    var location = await _db.Locations.Where(m => m.Lanway == port.First_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(x => x.Location_Column).ThenBy(y => y.Location_Layer).FirstOrDefaultAsync();
+                    var location = await _db.Locations.Where(m => m.Lanway == port.First_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(y => y.Location_Layer).ThenBy(x => x.Location_Column).FirstOrDefaultAsync();
                     if (location != null)
                     {
                         return location;
@@ -707,7 +707,7 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (port.Second_Lanway != 0)
                 {
-                    var location = await _db.Locations.Where(m => m.Lanway == port.Second_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(x => x.Location_Column).ThenBy(y =>y.Location_Layer).FirstOrDefaultAsync();
+                    var location = await _db.Locations.Where(m => m.Lanway == port.Second_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(y => y.Location_Layer).ThenBy(x => x.Location_Column).FirstOrDefaultAsync();
                     if (location != null)
                     {
                         return location;
@@ -715,7 +715,7 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (port.Third_Lanway != 0)
                 {
-                    var location = await _db.Locations.Where(m => m.Lanway == port.Third_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(x => x.Location_Column).ThenBy(y => y.Location_Layer).FirstOrDefaultAsync();
+                    var location = await _db.Locations.Where(m => m.Lanway == port.Third_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(y => y.Location_Layer).ThenBy(x => x.Location_Column).FirstOrDefaultAsync();
                     if (location != null)
                     {
                         return location;
@@ -723,7 +723,7 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (port.Forth_Lanway != 0)
                 {
-                    var location = await _db.Locations.Where(m => m.Lanway == port.Forth_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(x => x.Location_Column).ThenBy(y => y.Location_Layer).FirstOrDefaultAsync();
+                    var location = await _db.Locations.Where(m => m.Lanway == port.Forth_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(y => y.Location_Layer).ThenBy(x => x.Location_Column).FirstOrDefaultAsync();
                     if (location != null)
                     {
                         return location;
@@ -731,7 +731,7 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (port.Fifth_Lanway != 0)
                 {
-                    var location = await _db.Locations.Where(m => m.Lanway == port.Fifth_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(x => x.Location_Column).ThenBy(y => y.Location_Layer).FirstOrDefaultAsync();
+                    var location = await _db.Locations.Where(m => m.Lanway == port.Fifth_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(y => y.Location_Layer).ThenBy(x => x.Location_Column).FirstOrDefaultAsync();
                     if (location != null)
                     {
                         return location;
@@ -739,7 +739,7 @@ namespace Intelligent_AutoWms.Services.Services
                 }
                 if (port.Sixth_Lanway != 0)
                 {
-                    var location = await _db.Locations.Where(m => m.Lanway == port.Sixth_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(x => x.Location_Column).ThenBy(y => y.Location_Layer).FirstOrDefaultAsync();
+                    var location = await _db.Locations.Where(m => m.Lanway == port.Sixth_Lanway && m.Status == (int)DataStatusEnum.Normal && m.Step == (int)LocationStatusEnum.Idle).OrderBy(n => n.Location_Row).ThenBy(y => y.Location_Layer).ThenBy(x => x.Location_Column).FirstOrDefaultAsync();
                     if (location != null)
                     {
                         return location;
