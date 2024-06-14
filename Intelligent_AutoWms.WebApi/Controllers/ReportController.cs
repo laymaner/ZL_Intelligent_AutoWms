@@ -1,6 +1,7 @@
 ﻿using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model.BaseModel;
 using Intelligent_AutoWms.Model.RequestDTO.Area;
+using Intelligent_AutoWms.Model.ResponseDTO.Report;
 using Intelligent_AutoWms.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,9 +33,9 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<List<Int32>>> GetLocationReport()
+        public async Task<ApiResult<List<Int32>>> GetLocationReportAsync()
         {
-            var result = await _reportService.GetLocationReport();
+            var result = await _reportService.GetLocationReportAsync();
             return SuccessResult(result);
         }
 
@@ -43,9 +44,9 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<List<Int32>>> GetInventoryReport()
+        public async Task<ApiResult<List<Int32>>> GetInventoryReportAsync()
         {
-            var result = await _reportService.GetInventoryReport();
+            var result = await _reportService.GetInventoryReportAsync();
             return SuccessResult(result);
         }
 
@@ -54,9 +55,9 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<List<Int32>>> GetWaitReceiptReport()
+        public async Task<ApiResult<List<Int32>>> GetWaitReceiptReportAsync()
         {
-            var result = await _reportService.GetWaitReceiptReport();
+            var result = await _reportService.GetWaitReceiptReportAsync();
             return SuccessResult(result);
         }
 
@@ -65,9 +66,9 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<List<Int32>>> GetReceiptedReport()
+        public async Task<ApiResult<List<Int32>>> GetReceiptedReportAsync()
         {
-            var result = await _reportService.GetReceiptedReport();
+            var result = await _reportService.GetReceiptedReportAsync();
             return SuccessResult(result);
         }
 
@@ -77,9 +78,9 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<List<Int32>>> GetWaitDeliveryReport()
+        public async Task<ApiResult<List<Int32>>> GetWaitDeliveryReportAsync()
         {
-            var result = await _reportService.GetWaitDeliveryReport();
+            var result = await _reportService.GetWaitDeliveryReportAsync();
             return SuccessResult(result);
         }
 
@@ -88,9 +89,20 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ApiResult<List<Int32>>> GetDeliveredReport()
+        public async Task<ApiResult<List<Int32>>> GetDeliveredReportAsync()
         {
-            var result = await _reportService.GetDeliveredReport();
+            var result = await _reportService.GetDeliveredReportAsync();
+            return SuccessResult(result);
+        }
+
+        /// <summary>
+        ///  获取出库单已出库数据分析-----综合
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ApiResult<ReceiptDeliveryInfo>> GetReceiptDeliveryInfoAsync()
+        {
+            var result = await _reportService.GetReceiptDeliveryInfoAsync();
             return SuccessResult(result);
         }
     }

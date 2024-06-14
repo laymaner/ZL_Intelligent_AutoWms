@@ -2,6 +2,7 @@
 using Intelligent_AutoWms.IServices.IServices;
 using Intelligent_AutoWms.Model;
 using Intelligent_AutoWms.Model.Entities;
+using Intelligent_AutoWms.Model.ResponseDTO.Report;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,7 @@ namespace Intelligent_AutoWms.Services.Services
         /// 获取货位使用情况
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Int32>> GetLocationReport()
+        public async Task<List<Int32>> GetLocationReportAsync()
         {
             try 
             {
@@ -48,7 +49,7 @@ namespace Intelligent_AutoWms.Services.Services
         /// 获取库存明细数据分析
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Int32>> GetInventoryReport()
+        public async Task<List<Int32>> GetInventoryReportAsync()
         {
             try
             {
@@ -81,7 +82,7 @@ namespace Intelligent_AutoWms.Services.Services
         /// 获取入库单待入库数据分析
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Int32>> GetWaitReceiptReport()
+        public async Task<List<Int32>> GetWaitReceiptReportAsync()
         {
             try
             {
@@ -115,7 +116,7 @@ namespace Intelligent_AutoWms.Services.Services
         /// 获取入库单已入库数据分析
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Int32>> GetReceiptedReport()
+        public async Task<List<Int32>> GetReceiptedReportAsync()
         {
             try
             {
@@ -149,7 +150,7 @@ namespace Intelligent_AutoWms.Services.Services
         ///  获取出库单待出库数据分析
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Int32>> GetWaitDeliveryReport()
+        public async Task<List<Int32>> GetWaitDeliveryReportAsync()
         {
             try
             {
@@ -183,7 +184,7 @@ namespace Intelligent_AutoWms.Services.Services
         ///  获取出库单已出库数据分析
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Int32>> GetDeliveredReport()
+        public async Task<List<Int32>> GetDeliveredReportAsync()
         {
             try
             {
@@ -205,6 +206,28 @@ namespace Intelligent_AutoWms.Services.Services
                 list.Add(first_two);
                 list.Add(first_now);
                 return list;
+            }
+            catch (Exception ex)
+            {
+                _log.LogDebug(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        ///  获取出库单已出库数据分析-----综合
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ReceiptDeliveryInfo> GetReceiptDeliveryInfoAsync()
+        {
+            try
+            {
+                ReceiptDeliveryInfo receiptDeliveryInfo = new ReceiptDeliveryInfo();
+                receiptDeliveryInfo.WaitReceipt = await GetWaitReceiptReportAsync();
+                receiptDeliveryInfo.Receipt = await GetReceiptedReportAsync();
+                receiptDeliveryInfo.WaitDelivery = await GetWaitDeliveryReportAsync();
+                receiptDeliveryInfo.Delivery = await GetDeliveredReportAsync();
+                return receiptDeliveryInfo;
             }
             catch (Exception ex)
             {
