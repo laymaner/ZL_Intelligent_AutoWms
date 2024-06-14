@@ -51,6 +51,10 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(path, true); // true : 显示控制器层注释
     c.OrderActionsBy(o => o.RelativePath); // 对action的名称进行排序，如果有多个，就可以看见效果了。
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", opt => opt.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination"));
+});
 
 builder.Services.AddMemoryCache();//内存缓存
 
@@ -150,7 +154,7 @@ app.UseSwaggerUI(options =>
 {
     options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
 });
-
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();//用户登录验证 必须在app.UseAuthorization()前注入
 app.UseAuthorization();//用户角色权限验证
