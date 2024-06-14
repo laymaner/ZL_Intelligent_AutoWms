@@ -494,7 +494,7 @@ namespace Intelligent_AutoWms.Services.Services
         {
             try
             {
-                if (!fileForm.FileName.Contains("WareHouse_Download_Template"))
+                if (!fileForm.FileName.Contains("Warehouse_Download_Template"))
                 {
                     throw new Exception("Please select the correct template to import");
                 }
