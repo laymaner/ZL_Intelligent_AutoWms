@@ -767,7 +767,7 @@ namespace Intelligent_AutoWms.Services.Services
                 jwtUserInfo.Code = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                 jwtUserInfo.Name = jwtToken.Claims.FirstOrDefault(c => c.Type == "User_Name").Value;
                 List<Claim> list = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-                if (list != null && list.Count >= 0)
+                if (list != null && list.Count > 0)
                 {
                     jwtUserInfo.Roles = list.Select(c => c.Value).ToArray();
                     var roles = await _db.Roles.Where(m => jwtUserInfo.Roles.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(n => n.Id).ToListAsync();
