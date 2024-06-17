@@ -24,5 +24,10 @@
         /// 角色编码集合
         /// </summary>
         public string[] Roles { get; set; }
+
+        /// <summary>
+        /// 登录用户角色权限
+        /// </summary>
+        public string[] Permissions { get; set; }
     }
 }

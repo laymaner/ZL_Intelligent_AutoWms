@@ -29,13 +29,15 @@ namespace Intelligent_AutoWms.Services.Services
         private readonly Intelligent_AutoWms_DbContext _db;
         private readonly ILogger<UserService> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IPermissionService _permissionService;
 
-        public UserService(ILogger<UserService> logger, IWebHostEnvironment webHostEnvironment, IOptionsSnapshot<JWTOptions> jwtOptionsSnapshot, Intelligent_AutoWms_DbContext db)
+        public UserService(ILogger<UserService> logger, IWebHostEnvironment webHostEnvironment, IOptionsSnapshot<JWTOptions> jwtOptionsSnapshot, Intelligent_AutoWms_DbContext db, IPermissionService permissionService)
         {
             _logger = logger;
             _jwtOptionsSnapshot = jwtOptionsSnapshot;
             _db = db;
             _webHostEnvironment = webHostEnvironment;
+            _permissionService = permissionService;
         }
 
         /// <summary>
@@ -768,6 +770,8 @@ namespace Intelligent_AutoWms.Services.Services
                 if (list != null && list.Count >= 0)
                 {
                     jwtUserInfo.Roles = list.Select(c => c.Value).ToArray();
+                    var roles = await _db.Roles.Where(m => jwtUserInfo.Roles.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(n => n.Id).ToListAsync();
+                    jwtUserInfo.Permissions = await _permissionService.GetRolePermissionsByRoleIdsAsync(roles);
                 }
                 return jwtUserInfo;
 

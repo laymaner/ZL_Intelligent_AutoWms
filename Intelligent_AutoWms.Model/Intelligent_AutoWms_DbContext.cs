@@ -31,6 +31,8 @@ namespace Intelligent_AutoWms.Model
 
         public DbSet<WMS_Inventory> Inventories { get; set; }
 
+        public DbSet<WMS_Permission> WMS_Permissions { get; set; }
+
 
         public Intelligent_AutoWms_DbContext(DbContextOptions<Intelligent_AutoWms_DbContext> options) : base(options)
         {
