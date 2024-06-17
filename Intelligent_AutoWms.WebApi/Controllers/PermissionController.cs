@@ -31,6 +31,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <param name="createPermisssionDTO"></param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<ApiResult<long>> CreateAsync([FromBody] CreatePermisssionDTO createPermisssionDTO)
         {
             var result = await _permissionService.CreateAsync(createPermisssionDTO, long.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value));
@@ -42,6 +43,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <param name="Ids"></param>
         /// <returns></returns>
+        [HttpGet]
         public async Task<ApiResult<string[]>> GetRolePermissionsByRoleIdsAsync(List<long> Ids)
         {
             var result = await _permissionService.GetRolePermissionsByRoleIdsAsync(Ids);
@@ -53,6 +55,7 @@ namespace Intelligent_AutoWms.WebApi.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
+        [HttpGet]
         public async Task<ApiResult<string[]>> GetRolePermissionsByRoleIdAsync(long Id)
         {
             var result = await _permissionService.GetRolePermissionsByRoleIdAsync(Id);
