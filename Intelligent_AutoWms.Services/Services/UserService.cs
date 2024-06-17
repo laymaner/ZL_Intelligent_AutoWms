@@ -773,6 +773,11 @@ namespace Intelligent_AutoWms.Services.Services
                     var roles = await _db.Roles.Where(m => jwtUserInfo.Roles.Contains(m.Code) && m.Status == (int)DataStatusEnum.Normal).Select(n => n.Id).ToListAsync();
                     jwtUserInfo.Permissions = await _permissionService.GetRolePermissionsByRoleIdsAsync(roles);
                 }
+                else
+                {
+                    jwtUserInfo.Roles = new string[1] { "nomalRole" };
+                    jwtUserInfo.Permissions = new string[1] { "nomalPermissions" };
+                }
                 return jwtUserInfo;
 
             }
