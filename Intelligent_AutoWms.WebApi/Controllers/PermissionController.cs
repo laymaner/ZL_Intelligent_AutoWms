@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace Intelligent_AutoWms.WebApi.Controllers
 {
     /// <summary>
-    /// 库区
+    /// 角色权限
     /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
